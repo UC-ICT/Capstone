@@ -121,5 +121,8 @@ public class Diary extends AppCompatActivity {
         view.startAnimation(fadeOut);
         view.setVisibility(View.GONE);
     }
+    private void test3333(){
+
+    }
 
 }
