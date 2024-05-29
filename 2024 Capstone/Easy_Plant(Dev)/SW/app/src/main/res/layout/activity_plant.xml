@@ -26,18 +26,181 @@
             android:textSize="30sp" />
     </LinearLayout>
 
-    <!--Article-->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="AD"
             android:textSize="35sp"
             android:textAlignment="center"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style" />
+        <TextView
+            android:id="@+id/selectPlant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
+            android:layout_marginBottom="10sp"
+            android:textSize="25sp"
+            android:text="심으신 씨앗을 골라주세요!"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+    <!--Article-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_border"
+            android:padding="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="8sp">
+            <ImageView
+                android:layout_width="70sp"
+                android:layout_height="70sp"
+                android:src="@drawable/sangchu" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginLeft="50sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="상추"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="관리할 필요가 없어요"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="키우는 데 걸리는 날: 00 Day"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_border"
+            android:padding="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="8sp">
+            <ImageView
+                android:layout_width="70sp"
+                android:layout_height="70sp"
+                android:src="@drawable/ggatnip" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginLeft="50sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="깻잎"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="관리할 부분이 있어요"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="키우는 데 걸리는 날: 00 Day"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_border"
+            android:padding="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="8sp">
+            <ImageView
+                android:layout_width="70sp"
+                android:layout_height="70sp"
+                android:src="@drawable/sweet_basil" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginLeft="50sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="스위트 바질"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="관리할 필요가 없어요"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="키우는 데 걸리는 날: 00 Day"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_border"
+            android:padding="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="8sp">
+            <ImageView
+                android:layout_width="70sp"
+                android:layout_height="70sp"
+                android:src="@drawable/apple_mint" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginLeft="50sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="애플 민트"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="관리할 필요가 없어요"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="키우는 데 걸리는 날: 00 Day"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
     </LinearLayout>
 
     <!--Button-->

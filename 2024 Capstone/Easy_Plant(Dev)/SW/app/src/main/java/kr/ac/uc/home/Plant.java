@@ -29,21 +29,13 @@ public class Plant extends AppCompatActivity {
         final Button btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
         final Button btnMenu = findViewById(R.id.btnMenu); // 메뉴 버튼
         final TextView title = findViewById(R.id.title); // 제목
-
-
+        final TextView selectPlant = findViewById(R.id.selectPlant); // 식물 설정 문장
 
         title.setText(header[1]);
         btnHome.setText(menu[0]);
         btnPlant.setText(menu[1]);
         btnLight.setText(menu[2]);
         btnDiary.setText(menu[3]);
-
-
-//        btnIntent.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-//            startActivity(intent);
-//            finish(); //현재 액티비티를 종료
-//        });
 
         // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
         btnHome.setVisibility(View.GONE);
