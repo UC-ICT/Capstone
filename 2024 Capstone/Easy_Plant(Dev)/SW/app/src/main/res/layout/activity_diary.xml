@@ -15,47 +15,78 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#D4F4AE"
-        android:padding="10dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!--Article-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <TextView
+            android:id="@+id/diaryTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="AD"
-            android:textSize="35sp"
-            android:textAlignment="center"
-            android:background="@drawable/border_style"/>
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDirWrite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_weight="1"
+                android:text="btnDirWrite" />
+
+            <Button
+                android:id="@+id/btnDirDel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="btnDirDel" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <!--Button-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <!--        조명 설정-->
+
         <Button
             android:id="@+id/btnLight"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:visibility="invisible"
-            android:backgroundTint="@color/white"
             android:layout_marginStart="15dp"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"
+            android:visibility="invisible" />
 
     </LinearLayout>
 
@@ -65,46 +96,49 @@
         android:gravity="center_horizontal"
         android:padding="10sp">
         <!--        식물 설정-->
+
         <Button
             android:id="@+id/btnPlant"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:visibility="invisible"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:visibility="invisible" />
 
         <!--        홈-->
+
         <Button
             android:id="@+id/btnHome"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#D4F4AE"
+            android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:backgroundTint="#D4F4AE"
-            android:visibility="gone"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:visibility="gone" />
 
         <!--        메뉴-->
+
         <Button
             android:id="@+id/btnMenu"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#D4F4AE"
             android:textSize="20sp"
-            android:visibility="visible"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:visibility="visible" />
 
         <!--        일기장-->
         <Button
             android:id="@+id/btnDiary"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:visibility="invisible"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:visibility="invisible" />
     </LinearLayout>
 
 </LinearLayout>
