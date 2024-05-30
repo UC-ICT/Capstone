@@ -2,6 +2,8 @@ package kr.ac.uc.home;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,16 +20,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Calendar;
 
 public class Diary extends AppCompatActivity {
     final String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
     final String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
     public String readDay = null; // 선택한 날짜를 저장할 변수
-    public String tdate = null; // 임시 사용(날짜)
+    public String tDate = null; // 다이얼 로그 창에서 날짜 표기
     public String str = null; // 일기 내용을 저장할 변수
-
+    public Button btnDirWrite, btnDirDel;   //작성, 삭제 버튼
     private TextView diaryTextView; // 일기 작성 여부 표기
-    private EditText contextEditText; // 일기 내용 입력
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +44,10 @@ public class Diary extends AppCompatActivity {
         final Button btnMenu = findViewById(R.id.btnMenu); // 메뉴 버튼
         final TextView title = findViewById(R.id.title); // 제목
         final CalendarView calendarView = findViewById(R.id.calendarView); // 달력
-        final Button btnDirWrite = findViewById(R.id.btnDirWrite); // 작성 버튼
+
+        btnDirWrite = findViewById(R.id.btnDirWrite); // 작성 버튼
+        btnDirDel= findViewById(R.id.btnDirDel); // 일기 삭제 버튼
         diaryTextView = findViewById(R.id.diaryTextView); // 일기 작성 여부 표기
-//        contextEditText = findViewById(R.id.contextEditText); // 내용 표기
 
         title.setText(header[3]);
         btnHome.setText(menu[0]);
@@ -116,6 +119,8 @@ public class Diary extends AppCompatActivity {
             }
         });
 
+
+
         // 캘린더 날짜 선택 리스너 설정
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -123,11 +128,9 @@ public class Diary extends AppCompatActivity {
                 // 날짜가 선택되면 관련 뷰의 가시성을 조정하고, 날짜를 표시함
                 diaryTextView.setVisibility(View.VISIBLE);
 
-                tdate = String.format("%d / %d / %d", year, month + 1, dayOfMonth); // 클릭시 날짜 표시
-                diaryTextView.setText(tdate); // 일기 날짜 텍스트뷰에 설정
                 readDay = String.format("%d-%02d-%02d.txt", year, month + 1, dayOfMonth); // 파일 이름 설정
+                diaryTextView.setText(readDay); // 일기 날짜 텍스트뷰에 설정
 
-//                contextEditText.setText(""); // 에디트텍스트 초기화
                 checkDay(year, month, dayOfMonth); // 선택한 날짜의 일기를 체크
             }
         });
@@ -142,6 +145,7 @@ public class Diary extends AppCompatActivity {
 
             // 다이얼로그 객체 생성
             AlertDialog dialog = builder.create();
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
             // 커스텀 레이아웃의 뷰들을 가져옴
             EditText multiLineEditText = dialogView.findViewById(R.id.multiLineEditText);
@@ -149,13 +153,15 @@ public class Diary extends AppCompatActivity {
             Button btnSaveDir = dialogView.findViewById(R.id.btnSaveDir);
             Button btnCancelDir = dialogView.findViewById(R.id.btnCancelDir);
 
-            dialog_message.setText(tdate);
+            dialog_message.setText(tDate);
 
             // 확인 버튼 클릭 리스너 설정
             btnSaveDir.setOnClickListener(view -> {
                 // 입력된 텍스트를 가져와서 파일에 저장
                 String result = multiLineEditText.getText().toString();
                 saveDiary(readDay, result);
+                diaryTextView.setText(result);
+                btnDirDel.setVisibility(view.VISIBLE);
                 dialog.dismiss(); // 다이얼로그 닫기
             });
 
@@ -164,6 +170,18 @@ public class Diary extends AppCompatActivity {
 
             dialog.show(); // 다이얼로그 표시
         });
+        // 현재 날짜를 사용하여 checkDay 메소드 호출
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // 텍스트뷰 초기화
+        tDate = String.format("%d-%02d-%02d", year, month + 1, dayOfMonth);
+        diaryTextView.setText(readDay); // 일기 날짜 텍스트뷰에 설정
+        readDay = String.format("%d-%02d-%02d.txt", year, month + 1, dayOfMonth); // 파일 이름 설정
+
+        checkDay(year, month, dayOfMonth); // 현재 날짜의 일기를 체크
     }
 
     public void checkDay(int cYear, int cMonth, int cDay) {
@@ -178,13 +196,20 @@ public class Diary extends AppCompatActivity {
             fis.close();
 
             str = new String(fileData); // 파일 내용을 문자열로 변환
-
-            contextEditText.setVisibility(View.INVISIBLE); // 에디트텍스트 숨김
             diaryTextView.setVisibility(View.VISIBLE); // 텍스트뷰 표시
             diaryTextView.setText(str); // 텍스트뷰에 일기 내용 표시
+            btnDirDel.setVisibility(View.VISIBLE); // 삭제 버튼 숨김
+
+            // 삭제 버튼 클릭 리스너 설정
+            btnDirDel.setOnClickListener(v -> {
+                btnDirWrite.setVisibility(View.VISIBLE); // 저장 버튼 표시
+                btnDirDel.setVisibility(View.GONE); // 삭제 버튼 숨김
+                removeDiary(readDay); // 일기 삭제
+            });
 
         } catch (Exception e) {
             diaryTextView.setText("아직 일기를 작성하지 않았어요.");
+            btnDirDel.setVisibility(View.GONE); // 삭제 버튼 숨김
             e.printStackTrace(); // 예외 발생 시 스택 트레이스를 출력
         }
     }
