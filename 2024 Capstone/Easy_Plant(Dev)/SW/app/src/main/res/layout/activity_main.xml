@@ -140,22 +140,58 @@
                     android:layout_width="10dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
                     android:layout_margin="10dp"
-                    tools:srcCompat="@drawable/waterLevelone" />
+                    android:layout_weight="2"
+                    tools:srcCompat="@drawable/waterlvel1" />
 
-                <TextView
-                    android:id="@+id/tvwaterLevel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_margin="20dp"
-                    android:layout_weight="8"
-                    android:text="충분히 있어요!"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    />
+               <LinearLayout
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical"
+                   android:layout_gravity="center"
+                   android:gravity="center"
+                   android:layout_margin="20dp"
+                   android:layout_weight="8">
+
+
+                   <TextView
+                       android:id="@+id/tvwaterLevelLabel"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="충분히 있어요!"
+                       android:textSize="20sp"
+                       android:textStyle="bold"
+                       android:layout_gravity="center"
+                       android:gravity="center"/>
+
+                   <LinearLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:orientation="horizontal">
+
+                       <EditText
+                           android:id="@+id/etWaterLevelInput"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_gravity="center"
+                           android:layout_marginStart="10dp"
+                           android:gravity="center"
+                           android:hint="숫자"
+                           android:inputType="number"
+                           android:layout_weight="3"
+                           android:padding="5dp"
+                           android:textSize="20sp" />
+
+                       <Button
+                           android:id="@+id/btnWaterLeveltest"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_weight="1"
+                           android:text="테스트" />
+                   </LinearLayout>
+
+               </LinearLayout>
+
             </LinearLayout>
 
             <!-- 일기 작성 -->
@@ -170,6 +206,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:text="오늘 작성된 일기가 없어요!" />
+
         </LinearLayout>
 
 
