@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
 
 
+<<<<<<< Updated upstream
     long readDay = System.currentTimeMillis();//현재시간
     Date date = new Date(readDay);//현재시간 data지정
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//날짜 포맷 지정
@@ -52,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView ivPlant, ivwaterLevel;
     TextView tvPlantedPlantName, tvPlantedDay, tvgrowDay, tvCondition, tvwaterLevelLabel, tvdiary;
+=======
+    final int[] arrwaterlevel = {R.drawable.waterlvel1, R.drawable.waterlvel2, R.drawable.waterlvel3, R.drawable.waterlvel4};
+
+    ImageView ivPlant, ivwaterLevel;
+    TextView tvPlantedPlantName, tvPlantedDay, tvgrownDay, tvCondition, tvwaterLevelLabel;
+>>>>>>> Stashed changes
     EditText etWaterLevelInput;
     Button btnWaterLeveltest;
 
@@ -73,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         etWaterLevelInput = findViewById(R.id.etWaterLevelInput); // 물 수위 텍스트 입력
         btnWaterLeveltest = findViewById(R.id.btnWaterLeveltest); // 물수위 테스트 버튼
 
+<<<<<<< Updated upstream
         ivPlant = findViewById(R.id.ivPlant); // 심은 식물 이미지
         tvPlantedPlantName = findViewById(R.id.tvPlantedPlantName); // 심은 식물 이름
         tvPlantedDay = findViewById(R.id.tvPlantedDay); // 심은 날짜
@@ -83,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+=======
+>>>>>>> Stashed changes
         title.setText(header[0]);
         btnHome.setText(menu[0]);
         btnPlant.setText(menu[1]);
@@ -97,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
         btnHome.setVisibility(View.GONE);
+<<<<<<< Updated upstream
         btnPlant.setVisibility(View.GONE);
         btnLight.setVisibility(View.GONE);
         btnDiary.setVisibility(View.GONE);
@@ -150,6 +161,46 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Plant.class);
+=======
+        btnPlant.setVisibility(View.INVISIBLE);
+        btnLight.setVisibility(View.GONE);
+        btnDiary.setVisibility(View.INVISIBLE);
+
+        //물 수위 센서 테스트 버튼
+        btnWaterLeveltest.setOnClickListener(v -> waterlevelChange());
+
+        // btnMenu 클릭 이벤트
+        btnMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnMenu.setVisibility(View.GONE); // btnMenu 숨기기
+                fadeInAnimation(btnHome);
+                fadeInAnimation(btnPlant);
+                fadeInAnimation(btnLight);
+                fadeInAnimation(btnDiary);
+            }
+        });
+
+        // btnHome 클릭 이벤트
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                fadeOutAnimation(btnHome);
+                fadeOutAnimation(btnPlant);
+                fadeOutAnimation(btnLight);
+                fadeOutAnimation(btnDiary);
+                btnMenu.setVisibility(View.VISIBLE); // btnMenu 보이기
+            }
+        });
+
+        // btnPlant 클릭 이벤트
+        btnPlant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Plant.class);
                 startActivity(intent);
                 finish();
             }
@@ -160,11 +211,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Light.class);
+>>>>>>> Stashed changes
                 startActivity(intent);
                 finish();
             }
         });
 
+<<<<<<< Updated upstream
+        // btnLight 클릭 이벤트
+        btnLight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Light.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+=======
+>>>>>>> Stashed changes
         // btnDiary 클릭 이벤트
         btnDiary.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,32 +241,49 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+<<<<<<< Updated upstream
 
     }
 
+=======
+    }
+
+    // 버튼 클릭 애니메이션(In)
+>>>>>>> Stashed changes
     private void fadeInAnimation(View view) {
         Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         view.setVisibility(View.VISIBLE);
         view.startAnimation(fadeIn);
     }
 
+<<<<<<< Updated upstream
+=======
+    // 버튼 클릭 애니메이션(Out)
+>>>>>>> Stashed changes
     private void fadeOutAnimation(View view) {
         Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
         view.startAnimation(fadeOut);
         view.setVisibility(View.GONE);
     }
 
+<<<<<<< Updated upstream
 
 
 
     private void waterlevelChange() {// 물수위 센서변화
         String waterLevelSensor = etWaterLevelInput.getText().toString();
+=======
+    private void waterlevelChange() {// 물수위 센서변화
+        String waterLevelSensor = etWaterLevelInput.getText().toString();
+        int waterLevel = 0;
+>>>>>>> Stashed changes
 
         try {
             // 문자열을 int로 변환
             waterLevel = Integer.parseInt(waterLevelSensor);
         } catch (NumberFormatException e) {
             // 입력된 문자열이 숫자가 아닐 경우 예외 처리
+<<<<<<< Updated upstream
 
             Toast.makeText(this, "유효한 숫자를 입력하세요.", Toast.LENGTH_SHORT).show();
         }
@@ -213,12 +295,26 @@ public class MainActivity extends AppCompatActivity {
             tvwaterLevelLabel.setText("부족해요");
             ivwaterLevel.setImageResource(arrwaterlevel[2]);
         } else if (waterLevel >= 60 && waterLevel <100) {
+=======
+            e.printStackTrace();
+            Toast.makeText(this, "유효한 숫자를 입력하세요.", Toast.LENGTH_SHORT).show();
+        }
+
+        if (waterLevel == 0) {
+            tvwaterLevelLabel.setText("물을 채워주세요");
+            ivwaterLevel.setImageResource(arrwaterlevel[3]);
+        } else if (waterLevel >= 30 && waterLevel <= 60) {
+            tvwaterLevelLabel.setText("부족해요");
+            ivwaterLevel.setImageResource(arrwaterlevel[2]);
+        } else if (waterLevel > 60 && waterLevel < 100) {
+>>>>>>> Stashed changes
             tvwaterLevelLabel.setText("충분해요");
             ivwaterLevel.setImageResource(arrwaterlevel[1]);
         } else if (waterLevel >= 100) {
             tvwaterLevelLabel.setText("다 채웠어요");
             ivwaterLevel.setImageResource(arrwaterlevel[0]);
         }
+<<<<<<< Updated upstream
 
     }
 
@@ -265,3 +361,8 @@ public class MainActivity extends AppCompatActivity {
 
 }
 
+=======
+
+    }
+}
+>>>>>>> Stashed changes

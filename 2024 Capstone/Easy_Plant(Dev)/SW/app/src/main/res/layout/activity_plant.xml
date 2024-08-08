@@ -212,13 +212,13 @@
         <!--        조명 설정-->
         <Button
             android:id="@+id/btnLight"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:visibility="invisible"
-            android:backgroundTint="@color/white"
             android:layout_marginStart="15dp"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -230,44 +230,45 @@
         <!--        식물 설정-->
         <Button
             android:id="@+id/btnPlant"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:visibility="invisible"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:visibility="gone" />
 
         <!--        홈-->
         <Button
             android:id="@+id/btnHome"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#D4F4AE"
+            android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:backgroundTint="#D4F4AE"
-            android:visibility="gone"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:visibility="gone" />
 
         <!--        메뉴-->
         <Button
             android:id="@+id/btnMenu"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:backgroundTint="#D4F4AE"
             android:textSize="20sp"
-            android:visibility="visible"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:visibility="visible" />
 
         <!--        일기장-->
         <Button
             android:id="@+id/btnDiary"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:visibility="invisible"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

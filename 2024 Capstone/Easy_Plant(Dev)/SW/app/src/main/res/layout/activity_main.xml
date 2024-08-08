@@ -226,17 +226,16 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:padding="10sp">
         <!--        식물 설정-->
         <Button
@@ -246,7 +245,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <!--        홈-->
         <Button
@@ -267,7 +266,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#D4F4AE"
-            android:textSize="20sp"
             android:visibility="visible" />
 
         <!--        일기장-->
@@ -278,7 +276,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:visibility="invisible" />
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>
