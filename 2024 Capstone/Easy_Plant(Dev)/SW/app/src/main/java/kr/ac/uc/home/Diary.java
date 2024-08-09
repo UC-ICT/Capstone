@@ -77,7 +77,7 @@ public class Diary extends AppCompatActivity {
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Diary.this, MainActivity.class);
+                Intent intent = new Intent(Diary.this, home.class);
                 startActivity(intent);
                 finish();
                 // 다른 버튼들 숨기기

@@ -1,368 +1,415 @@
 package kr.ac.uc.home;
+import android.Manifest; // 안드로이드 권한 매니페스트
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter; // 블루투스 어댑터 클래스 임포트
+import android.bluetooth.BluetoothDevice; // 블루투스 장치 클래스 임포트
+import android.bluetooth.BluetoothSocket; // 블루투스 소켓 클래스 임포트
+import android.content.BroadcastReceiver; // 브로드캐스트 리시버 클래스 임포트
+import android.content.Context; // 안드로이드 컨텍스트 클래스 임포트
+import android.content.Intent; // 인텐트 클래스 임포트
+import android.content.IntentFilter; // 인텐트 필터 클래스 임포트
+import android.content.pm.PackageManager; // 패키지 매니저 클래스 임포트
+import android.os.Bundle; // 번들 클래스 임포트
+import android.os.Handler; // 핸들러 클래스 임포트
+import android.os.Looper; // 루퍼 클래스 임포트
+import android.os.Message; // 메시지 클래스 임포트
+/*
+import android.support.v4.app.ActivityCompat; // 액티비티 컴팩트 클래스 임포트
+import android.support.v4.content.ContextCompat; // 컨텍스트 컴팩트 클래스 임포트
+import android.support.v7.app.AppCompatActivity; // 앱 컴팩트 액티비티 클래스 임포트*/
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.util.Log; // 로그 클래스 임포트
+import android.view.View; // 뷰 클래스 임포트
+import android.widget.AdapterView; // 어댑터 뷰 클래스 임포트
+import android.widget.ArrayAdapter; // 어레이 어댑터 클래스 임포트
+import android.widget.Button; // 버튼 클래스 임포트
+import android.widget.CheckBox; // 체크박스 클래스 임포트
+import android.widget.ListView; // 리스트뷰 클래스 임포트
+import android.widget.TextView; // 텍스트뷰 클래스 임포트
+import android.widget.Toast; // 토스트 클래스 임포트
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity; // 추가 AppCompat 상호작용
+import androidx.core.app.ActivityCompat;
 
-import java.io.File;
-import java.util.Calendar;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-
-import org.w3c.dom.Text;
-
-import java.io.File;
+import java.io.IOException; // IO 예외 클래스 임포트
+import java.lang.reflect.Method; // 리플렉션 메소드 클래스 임포트
+import java.nio.charset.StandardCharsets;
+import java.util.Set; // 세트 클래스 임포트
+import java.util.UUID; // UUID 클래스 임포트
 
 public class MainActivity extends AppCompatActivity {
-    final static String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
-    final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
 
+    private final String TAG = MainActivity.class.getSimpleName(); // 로그 태그
 
-<<<<<<< Updated upstream
-    long readDay = System.currentTimeMillis();//현재시간
-    Date date = new Date(readDay);//현재시간 data지정
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//날짜 포맷 지정
-    String getTime = sdf.format(date);//날짜 포맷 지정
+    private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "임의"의 고유 식별자
 
-    int waterLevel = 0; //물수위 변수
+    // 호출 함수 간에 공유되는 유형 식별을 위한 #defines
+    private final static int REQUEST_ENABLE_BT = 1; // 블루투스 이름 추가를 식별하는 데 사용
+    public final static int MESSAGE_READ = 2; // 블루투스 핸들러에서 메시지 업데이트 식별에 사용
+    private final static int CONNECTING_STATUS = 3; // 블루투스 핸들러에서 메시지 상태 식별에 사용
+    private static final int REQUEST_BLUETOOTH_CONNECT = 2;
+    private static final int REQUEST_FINE_LOCATION = 3;
 
+    // GUI 구성 요소
+    private TextView mBluetoothStatus; // 블루투스 상태 텍스트뷰
+    private TextView tvWaterLevel;
+    private TextView tvTemp;
+    private TextView tvHumi;
+    private Button mScanBtn; // 스캔 버튼
+    private Button mOffBtn; // 블루투스 끄기 버튼
+    private Button mListPairedDevicesBtn; // 페어링된 장치 목록 버튼
+    private Button mDiscoverBtn; // 장치 검색 버튼
+    private ListView mDevicesListView; // 장치 리스트뷰
+    private CheckBox mLED1; // LED1 체크박스
 
-    final int[] arrwaterlevel = {
-            R.drawable.waterlvel1, R.drawable.waterlvel2,
-            R.drawable.waterlvel3, R.drawable.waterlvel4
-    };
+    private BluetoothAdapter mBTAdapter; // 블루투스 어댑터
+    private Set<BluetoothDevice> mPairedDevices; // 페어링된 장치 세트
+    private ArrayAdapter<String> mBTArrayAdapter; // 블루투스 어레이 어댑터
 
-    ImageView ivPlant, ivwaterLevel;
-    TextView tvPlantedPlantName, tvPlantedDay, tvgrowDay, tvCondition, tvwaterLevelLabel, tvdiary;
-=======
-    final int[] arrwaterlevel = {R.drawable.waterlvel1, R.drawable.waterlvel2, R.drawable.waterlvel3, R.drawable.waterlvel4};
+    private Handler mHandler; // 콜백 알림을 받을 주요 핸들러
+    private ConnectedThread mConnectedThread; // 데이터 송수신을 위한 블루투스 백그라운드 작업 스레드
+    private BluetoothSocket mBTSocket = null; // 양방향 클라이언트-클라이언트 데이터 경로
 
-    ImageView ivPlant, ivwaterLevel;
-    TextView tvPlantedPlantName, tvPlantedDay, tvgrownDay, tvCondition, tvwaterLevelLabel;
->>>>>>> Stashed changes
-    EditText etWaterLevelInput;
-    Button btnWaterLeveltest;
+    private ActivityResultLauncher<Intent> enableBluetoothLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_main);
 
-        final TextView title = findViewById(R.id.title); // 제목
-        final Button btnMenu = findViewById(R.id.btnMenu); // 동그란 버튼
-        final Button btnHome = findViewById(R.id.btnHome); // 홈 버튼
-        final Button btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
-        final Button btnDiary = findViewById(R.id.btnDiary); // 일기장 버튼
-        final Button btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
+        // ActivityResultLauncher 초기화
+        enableBluetoothLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        mBluetoothStatus.setText(getString(R.string.sEnabled));
+                    } else {
+                        mBluetoothStatus.setText(getString(R.string.sDisabled));
+                    }
+                }
+        );
 
-        tvwaterLevelLabel = findViewById(R.id.tvwaterLevelLabel); // 물수위 텍스트
-        ivwaterLevel = findViewById(R.id.ivwaterLevel); // 물 수위 이미지
-        etWaterLevelInput = findViewById(R.id.etWaterLevelInput); // 물 수위 텍스트 입력
-        btnWaterLeveltest = findViewById(R.id.btnWaterLeveltest); // 물수위 테스트 버튼
+        checkPermissions();
 
-<<<<<<< Updated upstream
-        ivPlant = findViewById(R.id.ivPlant); // 심은 식물 이미지
-        tvPlantedPlantName = findViewById(R.id.tvPlantedPlantName); // 심은 식물 이름
-        tvPlantedDay = findViewById(R.id.tvPlantedDay); // 심은 날짜
-        tvgrowDay = findViewById(R.id.tvgrowDay); // 키운 날짜
-        tvCondition = findViewById(R.id.tvCondition); // 식물 상태
+        mBluetoothStatus = (TextView)findViewById(R.id.bluetooth_status); // 블루투스 상태 텍스트뷰 초기화
+        tvWaterLevel = (TextView) findViewById(R.id.tvWaterLevel);
+        tvTemp = (TextView) findViewById(R.id.tvTemp);
+        tvHumi = (TextView) findViewById(R.id.tvHumi);
+        mScanBtn = (Button)findViewById(R.id.scan); // 스캔 버튼 초기화
+        mOffBtn = (Button)findViewById(R.id.off); // 블루투스 끄기 버튼 초기화
+        mDiscoverBtn = (Button)findViewById(R.id.discover); // 장치 검색 버튼 초기화
+        mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn); // 페어링된 장치 목록 버튼 초기화
+        mLED1 = (CheckBox)findViewById(R.id.checkbox_led_1); // LED1 체크박스 초기화
 
-        tvdiary = findViewById(R.id.tvdiary); // 일기장 작성 여부
+        mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 블루투스 어레이 어댑터 초기화
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // 블루투스 어댑터 초기화
 
+        mDevicesListView = (ListView)findViewById(R.id.devices_list_view); // 장치 리스트뷰 초기화
+        mDevicesListView.setAdapter(mBTArrayAdapter); // 어댑터를 리스트뷰에 설정
+        mDevicesListView.setOnItemClickListener(mDeviceClickListener); // 리스트뷰 항목 클릭 리스너 설정
 
+        // 위치 권한이 허용되지 않았으면 요청
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
-=======
->>>>>>> Stashed changes
-        title.setText(header[0]);
-        btnHome.setText(menu[0]);
-        btnPlant.setText(menu[1]);
-        btnLight.setText(menu[2]);
-        btnDiary.setText(menu[3]);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
-        btnHome.setVisibility(View.GONE);
-<<<<<<< Updated upstream
-        btnPlant.setVisibility(View.GONE);
-        btnLight.setVisibility(View.GONE);
-        btnDiary.setVisibility(View.GONE);
-
-
-        //물 수위 센서
-        btnWaterLeveltest.setOnClickListener(new View.OnClickListener() {
+        // 핸들러 초기화
+        mHandler = new Handler(Looper.getMainLooper()){
             @Override
-            public void onClick(View v) {
-                waterlevelChange();
+            public void handleMessage(Message msg){ // --데이터 송신--
+                if(msg.what == MESSAGE_READ){ // 메시지가 읽기 메시지일 경우
+                    byte[] readBuffer = (byte[]) msg.obj;
+                    String readMessage = new String(readBuffer, StandardCharsets.UTF_8);
+                    // 데이터를 구분하여 TextView에 표시
+                    String[] data = readMessage.split("\n");
+                    for (String datum : data) {
+                        if (datum.startsWith("WaterLevel:")) {
+                            tvWaterLevel.setText(datum.substring("WaterLevel:".length()).trim());
+                        } else if (datum.startsWith("Temperature:")) {
+                            tvTemp.setText(datum.substring("Temperature:".length()).trim());
+                        } else if (datum.startsWith("Humidity:")) {
+                            tvHumi.setText(datum.substring("Humidity:".length()).trim());
+                        }
+                    }
+                }else{
+                    Log.e(TAG, "수신된 메시지가 바이트 배열이 아닙니다.");
+                }
+
+                if(msg.what == CONNECTING_STATUS){ // 메시지가 연결 상태일 경우
+                    if(msg.arg1 == 1) // 연결 성공 시
+                        mBluetoothStatus.setText(getString(R.string.BTConnected) + msg.obj);
+                    else // 연결 실패 시
+                        mBluetoothStatus.setText(getString(R.string.BTconnFail));
+                }
             }
-                                             });
+        };
 
+        // 블루투스 어댑터가 없으면 블루투스를 지원하지 않는 장치
+        if (mBTArrayAdapter == null) {
+            mBluetoothStatus.setText(getString(R.string.sBTstaNF)); // 블루투스 상태 설정
+            Toast.makeText(getApplicationContext(),getString(R.string.sBTdevNF),Toast.LENGTH_SHORT).show(); // 토스트 메시지 출력
+        }
+        else {
+            // LED1 체크박스 클릭 리스너 설정
+            mLED1.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    if(mConnectedThread != null) { // 스레드가 생성된 경우
+                        if (mLED1.isChecked()){
+                            mConnectedThread.write("1"); // "1" 메시지 전송
+                        }else{
+                            mConnectedThread.write("0"); // "0" 메시지 전송
+                        }
+                    }
+                }
+            });
 
-        //일기 작성 여부
-        checkTodayDiary();
+            // 스캔 버튼 클릭 리스너 설정
+            mScanBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bluetoothOn(); // 블루투스 켜기 메서드 호출
+                }
+            });
 
+            // 블루투스 끄기 버튼 클릭 리스너 설정
+            mOffBtn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    bluetoothOff(); // 블루투스 끄기 메서드 호출
+                }
+            });
 
-        //심은 일수 계산
-         growDay();
+            // 페어링된 장치 목록 버튼 클릭 리스너 설정
+            mListPairedDevicesBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v){
+                    listPairedDevices(); // 페어링된 장치 목록 표시 메서드 호출
+                }
+            });
 
-        // btnMenu 클릭 이벤트
-        btnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnMenu.setVisibility(View.GONE); // btnMenu 숨기기
-                fadeInAnimation(btnHome);
-                fadeInAnimation(btnPlant);
-                fadeInAnimation(btnLight);
-                fadeInAnimation(btnDiary);
-            }
-        });
-
-        // btnHome 클릭 이벤트
-        btnHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                fadeOutAnimation(btnHome);
-                fadeOutAnimation(btnPlant);
-                fadeOutAnimation(btnLight);
-                fadeOutAnimation(btnDiary);
-                btnMenu.setVisibility(View.VISIBLE); // btnMenu 보이기
-            }
-        });
-
-        // btnPlant 클릭 이벤트
-        btnPlant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Plant.class);
-=======
-        btnPlant.setVisibility(View.INVISIBLE);
-        btnLight.setVisibility(View.GONE);
-        btnDiary.setVisibility(View.INVISIBLE);
-
-        //물 수위 센서 테스트 버튼
-        btnWaterLeveltest.setOnClickListener(v -> waterlevelChange());
-
-        // btnMenu 클릭 이벤트
-        btnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnMenu.setVisibility(View.GONE); // btnMenu 숨기기
-                fadeInAnimation(btnHome);
-                fadeInAnimation(btnPlant);
-                fadeInAnimation(btnLight);
-                fadeInAnimation(btnDiary);
-            }
-        });
-
-        // btnHome 클릭 이벤트
-        btnHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                fadeOutAnimation(btnHome);
-                fadeOutAnimation(btnPlant);
-                fadeOutAnimation(btnLight);
-                fadeOutAnimation(btnDiary);
-                btnMenu.setVisibility(View.VISIBLE); // btnMenu 보이기
-            }
-        });
-
-        // btnPlant 클릭 이벤트
-        btnPlant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Plant.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        // btnLight 클릭 이벤트
-        btnLight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Light.class);
->>>>>>> Stashed changes
-                startActivity(intent);
-                finish();
-            }
-        });
-
-<<<<<<< Updated upstream
-        // btnLight 클릭 이벤트
-        btnLight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Light.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-=======
->>>>>>> Stashed changes
-        // btnDiary 클릭 이벤트
-        btnDiary.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Diary.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-
-<<<<<<< Updated upstream
-
+            // 장치 검색 버튼 클릭 리스너 설정
+            mDiscoverBtn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    discover(); // 장치 검색 메서드 호출
+                }
+            });
+        }
+    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_FINE_LOCATION:
+            case REQUEST_BLUETOOTH_CONNECT:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, proceed with Bluetooth operations
+                    if (requestCode == REQUEST_BLUETOOTH_CONNECT) {
+                        listPairedDevices();
+                    }
+                } else {
+                    // Permission denied
+                    Toast.makeText(this, "Permission denied. Bluetooth functionality may be limited.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
-=======
+    // 권한 확인 및 요청 메서드 추가
+    private void checkPermissions() {
+        // Check for Bluetooth permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Request missing permissions
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            }, REQUEST_FINE_LOCATION);
+        }
     }
 
-    // 버튼 클릭 애니메이션(In)
->>>>>>> Stashed changes
-    private void fadeInAnimation(View view) {
-        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        view.setVisibility(View.VISIBLE);
-        view.startAnimation(fadeIn);
+    // 블루투스 켜기 메서드
+    private void bluetoothOn() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
+            if (!mBTAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                enableBluetoothLauncher.launch(enableBtIntent);
+                mBluetoothStatus.setText(getString(R.string.BTEnable));
+                Toast.makeText(getApplicationContext(), getString(R.string.sBTturON), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), getString(R.string.BTisON), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            checkPermissions(); // 필요한 권한 요청
+        }
     }
 
-<<<<<<< Updated upstream
-=======
-    // 버튼 클릭 애니메이션(Out)
->>>>>>> Stashed changes
-    private void fadeOutAnimation(View view) {
-        Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-        view.startAnimation(fadeOut);
-        view.setVisibility(View.GONE);
+    // 사용자가 라디오 활성화에 대해 "예" 또는 "아니오"를 선택한 후 여기에 진입
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent Data) {
+        // 응답할 요청 확인
+        super.onActivityResult(requestCode, resultCode, Data);
+        if (requestCode == REQUEST_ENABLE_BT) {
+            // 요청이 성공했는지 확인
+            if (resultCode == RESULT_OK) {
+                mBluetoothStatus.setText(getString(R.string.sEnabled)); // 활성화 성공 시 블루투스 상태 업데이트
+            } else
+                mBluetoothStatus.setText(getString(R.string.sDisabled)); // 활성화 실패 시 블루투스 상태 업데이트
+        }
     }
 
-<<<<<<< Updated upstream
+    // 블루투스 끄기 메서드
+    private void bluetoothOff() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
+            mBTAdapter.disable();
+            mBluetoothStatus.setText(getString(R.string.sBTdisabl));
+            Toast.makeText(getApplicationContext(), "Bluetooth turned Off", Toast.LENGTH_SHORT).show();
+        } else {
+            checkPermissions(); // 필요한 권한 요청
+        }
+    }
 
+    // 장치 검색 메서드
+    private void discover() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (mBTAdapter.isDiscovering()) {
+                mBTAdapter.cancelDiscovery();
+                Toast.makeText(getApplicationContext(), getString(R.string.DisStop), Toast.LENGTH_SHORT).show();
+            } else {
+                if (mBTAdapter.isEnabled()) {
+                    mBTArrayAdapter.clear();
+                    mBTAdapter.startDiscovery();
+                    Toast.makeText(getApplicationContext(), getString(R.string.DisStart), Toast.LENGTH_SHORT).show();
+                    registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.BTnotOn), Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            checkPermissions(); // 필요한 권한 요청
+        }
+    }
 
+    // 브로드캐스트 리시버 객체
+    final BroadcastReceiver blReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction(); // 인텐트 액션 확인
+            if(BluetoothDevice.ACTION_FOUND.equals(action)){ // 장치가 발견되었을 때
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE); // 블루투스 장치 객체 얻기
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_CONNECT);
+                    return;
+                }
+                mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress()); // 장치 이름과 주소를 어레이 어댑터에 추가
+                mBTArrayAdapter.notifyDataSetChanged(); // 어댑터 데이터 변경 알림
+            }
+        }
+    };
 
-    private void waterlevelChange() {// 물수위 센서변화
-        String waterLevelSensor = etWaterLevelInput.getText().toString();
-=======
-    private void waterlevelChange() {// 물수위 센서변화
-        String waterLevelSensor = etWaterLevelInput.getText().toString();
-        int waterLevel = 0;
->>>>>>> Stashed changes
+    // 페어링된 장치 목록 표시 메서드
+    private void listPairedDevices() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+            mBTArrayAdapter.clear();
+            mPairedDevices = mBTAdapter.getBondedDevices();
+            if (mBTAdapter.isEnabled()) {
+                for (BluetoothDevice device : mPairedDevices) {
+                    mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                }
+                Toast.makeText(getApplicationContext(), getString(R.string.show_paired_devices), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), getString(R.string.BTnotOn), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_CONNECT);
+            //checkPermissions();
+        }
+    }
 
+    // 장치 리스트뷰 항목 클릭 리스너
+    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            if(!mBTAdapter.isEnabled()) { // 블루투스가 꺼져 있으면
+                Toast.makeText(getBaseContext(), getString(R.string.BTnotOn), Toast.LENGTH_SHORT).show(); // 토스트 메시지 출력
+                return;
+            }
+
+            mBluetoothStatus.setText(getString(R.string.cConnet)); // 블루투스 상태 업데이트
+            // 장치 MAC 주소를 얻기, 이는 뷰의 마지막 17 자임
+            String info = ((TextView) view).getText().toString();
+            final String address = info.substring(info.length() - 17);
+            final String name = info.substring(0,info.length() - 17);
+
+            // GUI 스레드 블로킹을 피하기 위해 새 스레드 생성
+            new Thread() {
+                @Override
+                public void run() {
+                    boolean fail = false;
+
+                    BluetoothDevice device = mBTAdapter.getRemoteDevice(address); // 원격 장치 얻기
+
+                    try {
+                        mBTSocket = createBluetoothSocket(device); // 블루투스 소켓 생성
+                    } catch (IOException e) {
+                        fail = true;
+                        Toast.makeText(getBaseContext(), getString(R.string.ErrSockCrea), Toast.LENGTH_SHORT).show(); // 소켓 생성 실패 시 토스트 메시지 출력
+                    }
+                    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        // 권한이 없을 경우 요청
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_CONNECT);
+                        return;
+                    }
+                    // 블루투스 소켓 연결 설정
+                    try {
+                        mBTSocket.connect(); // 소켓 연결
+                    } catch (IOException e) {
+                        try {
+                            fail = true;
+                            mBTSocket.close(); // 연결 실패 시 소켓 닫기
+                            mHandler.obtainMessage(CONNECTING_STATUS, -1, -1) // 연결 실패 메시지 보내기
+                                    .sendToTarget();
+                        } catch (IOException e2) {
+                            // 이 상황 처리 코드 삽입
+                            Toast.makeText(getBaseContext(), getString(R.string.ErrSockCrea), Toast.LENGTH_SHORT).show(); // 소켓 생성 실패 시 토스트 메시지 출력
+                        }
+                    }
+                    if(!fail) { // 실패하지 않았을 경우
+                        mConnectedThread = new ConnectedThread(mBTSocket, mHandler); // 연결된 스레드 생성
+                        mConnectedThread.start(); // 스레드 시작
+
+                        mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name) // 연결 성공 메시지 보내기
+                                .sendToTarget();
+                    }
+                }
+            }.start();
+        }
+    };
+
+    // 블루투스 소켓 생성 메서드
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         try {
-            // 문자열을 int로 변환
-            waterLevel = Integer.parseInt(waterLevelSensor);
-        } catch (NumberFormatException e) {
-            // 입력된 문자열이 숫자가 아닐 경우 예외 처리
-<<<<<<< Updated upstream
-
-            Toast.makeText(this, "유효한 숫자를 입력하세요.", Toast.LENGTH_SHORT).show();
+            final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", UUID.class);
+            return (BluetoothSocket) m.invoke(device, BT_MODULE_UUID);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not create Insecure RFComm Connection", e);
         }
 
-        if (waterLevel == 0 && waterLevel < 30) {
-            tvwaterLevelLabel.setText("물을 채워주세요");
-            ivwaterLevel.setImageResource(arrwaterlevel[3]);
-        } else if (waterLevel >= 30 && waterLevel <60) {
-            tvwaterLevelLabel.setText("부족해요");
-            ivwaterLevel.setImageResource(arrwaterlevel[2]);
-        } else if (waterLevel >= 60 && waterLevel <100) {
-=======
-            e.printStackTrace();
-            Toast.makeText(this, "유효한 숫자를 입력하세요.", Toast.LENGTH_SHORT).show();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_BLUETOOTH_CONNECT);
+            return null;
         }
 
-        if (waterLevel == 0) {
-            tvwaterLevelLabel.setText("물을 채워주세요");
-            ivwaterLevel.setImageResource(arrwaterlevel[3]);
-        } else if (waterLevel >= 30 && waterLevel <= 60) {
-            tvwaterLevelLabel.setText("부족해요");
-            ivwaterLevel.setImageResource(arrwaterlevel[2]);
-        } else if (waterLevel > 60 && waterLevel < 100) {
->>>>>>> Stashed changes
-            tvwaterLevelLabel.setText("충분해요");
-            ivwaterLevel.setImageResource(arrwaterlevel[1]);
-        } else if (waterLevel >= 100) {
-            tvwaterLevelLabel.setText("다 채웠어요");
-            ivwaterLevel.setImageResource(arrwaterlevel[0]);
-        }
-<<<<<<< Updated upstream
-
+        BluetoothSocket socket = device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
+        return socket;
     }
-
-    public void checkTodayDiary() {// 오늘 일기 확인
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1; // 0부터 시작하므로 1 더함
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);//날짜
-
-        String todayFileName = String.format("%d-%02d-%02d.txt", year, month, dayOfMonth); // 오늘 날짜 파일 이름 설정
-        File file = new File(getFilesDir(), todayFileName); // 파일 객체 생성
-
-        if (file.exists()) { // 파일이 존재하는지 확인
-            tvdiary.setVisibility(View.VISIBLE); // 텍스트뷰 표시
-            tvdiary.setText("오늘 일기가 있습니다."); // 일기가 있음을 표시
-        } else {
-            tvdiary.setVisibility(View.VISIBLE); // 텍스트뷰 표시
-            tvdiary.setText("오늘 일기가 없습니다."); // 일기가 없음을 표시
-        }
-    }
-
-    public void growDay() {
-        LocalDate startDate = LocalDate.of(2024,7,1);//임시로 식물 심은날짜 지정
-        LocalDate endDate = LocalDate.now();//현재 날짜
-
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-
-        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
-
-        tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");
-
-
-        // 식물 상태
-        if (daysBetween > 10) {
-            tvCondition.setText("수확 시기 입니다.");
-        } else {
-            tvCondition.setText("잘 자라고 있어요.");
-        }
-
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-
-    }
-
 
 }
-
-=======
-
-    }
-}
->>>>>>> Stashed changes
