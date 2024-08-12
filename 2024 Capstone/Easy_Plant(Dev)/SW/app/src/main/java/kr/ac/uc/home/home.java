@@ -177,7 +177,7 @@ public class home extends AppCompatActivity {
             return; // 수정 완료!
         }
 
-        if (waterLevel == 0) {
+       if (waterLevel == 0 && waterLevel < 30) {
             tvwaterLevelLabel.setText("물을 채워주세요");
             ivwaterLevel.setImageResource(arrwaterlevel[3]);
         } else if (waterLevel >= 30 && waterLevel <= 60) {
@@ -210,14 +210,64 @@ public class home extends AppCompatActivity {
         }
     }
 
-    public void growDay() {
-        LocalDate startDate = LocalDate.of(2024, 7, 1);//임시로 식물 심은날짜 지정
+   public void growDay() {// 키운 날짜
+
+        Intent intent = getIntent();//인텐트 받아오기
+
+        String plantName = intent.getStringExtra("plantName");
+
+        tvPlantedPlantName.setText(plantName);//심은 식물 이름
+
+        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
+        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
+        LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
+
         LocalDate endDate = LocalDate.now();//현재 날짜
+        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
 
-        tvPlantedDay.setText("심은 날짜 : " + startDate);//심은 날짜
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);//날짜 차이 계산
 
-        long growDay = ChronoUnit.DAYS.between(startDate, endDate);//일수 차이 계산
+        tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
 
-        tvgrowDay.setText("키운 날짜 : " + growDay + "일"); //키운 날짜 표시
+        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
+
+
+
+        // 식물 상태
+        if (daysBetween > 10) {
+            tvCondition.setText("수확 시기 입니다.");
+        } else {
+            tvCondition.setText("잘 자라고 있어요.");
+        }
+
+
+
     }
+
+    public void plantImage() {// 심은 식물 이미지
+
+        String str1 = tvPlantedPlantName.getText().toString() ;
+
+
+        if (str1.equals("상추")) {
+            ivPlant.setImageResource(R.drawable.sangchu);
+        }
+        if (str1.equals("깻잎")) {
+            ivPlant.setImageResource(R.drawable.ggatnip);
+        }
+        if (str1.equals("스위트 바질")) {
+            ivPlant.setImageResource(R.drawable.sweet_basil);
+        }
+        if (str1.equals("애플 민트")) {
+            ivPlant.setImageResource(R.drawable.apple_mint);
+        }
+        if (str1.isEmpty()) {// 심은 식물이 없을 때
+
+        }
+    }
+
+
 }
