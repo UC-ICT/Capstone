@@ -4,110 +4,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingTop="16dp"
-    android:paddingRight="16dp"
-    android:paddingBottom="16dp"
-    tools:context="kr.ac.uc.home.MainActivity"
-    >
+    android:padding="16dp"
+    android:background="@color/bluetooth_text">
 
-    <CheckBox
-        android:id="@+id/checkbox_led_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:checked="false"
-        android:scaleX="1.7"
-        android:scaleY="1.7"
-        android:text="LED 켜기/끄기"
-        android:textStyle="bold" />
+    <!-- 상태 정보 표시 -->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="RX:"
-            android:textStyle="bold" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="상태:"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/bluetooth_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.9"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="&lt;블루투스 연결상태>" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvWaterLevel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="수위: " />
-    <TextView
-        android:id="@+id/tvTemp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="온도(C): "/>
-    <TextView
-        android:id="@+id/tvHumi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="습도(%): "/>
-
+    <!-- 버튼들 -->
     <Button
         android:id="@+id/scan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:textStyle="bold"
+        android:textColor="@color/bluetooth_button_text"
+        android:backgroundTint="@color/bluetooth_button"
         android:text="Bluetooth ON" />
 
     <Button
         android:id="@+id/off"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:textStyle="bold"
+        android:textColor="@color/bluetooth_button_text"
+        android:backgroundTint="@color/bluetooth_button"
         android:text="Bluetooth OFF" />
 
     <Button
         android:id="@+id/paired_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:textStyle="bold"
+        android:textColor="@color/bluetooth_button_text"
+        android:backgroundTint="@color/bluetooth_button"
         android:text="페어링된 디바이스 보기" />
 
     <Button
         android:id="@+id/discover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/bluetooth_button_text"
+        android:backgroundTint="@color/bluetooth_button"
         android:text="새 디바이스 찾기" />
 
+    <!-- 디바이스 목록 -->
     <ListView
         android:id="@+id/devices_list_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:choiceMode="singleChoice" />
+        android:layout_marginTop="16dp"
+        android:background="@color/bluetooth_ListView_background"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"
+        android:padding="16dp"
+
+
+        />
+
 </LinearLayout>
