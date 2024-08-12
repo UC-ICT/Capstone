@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothSocket mBTSocket = null; // 양방향 클라이언트-클라이언트 데이터 경로
 
     private ActivityResultLauncher<Intent> enableBluetoothLauncher;
+    private ActivityResultLauncher<Intent> homeActivityLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,16 @@ public class MainActivity extends AppCompatActivity {
                         mBluetoothStatus.setText(getString(R.string.sEnabled));
                     } else {
                         mBluetoothStatus.setText(getString(R.string.sDisabled));
+                    }
+                }
+        );
+        homeActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // homeActivity에서 반환된 결과 처리
+                        String returnValue = result.getData().getStringExtra("result_key");
+                        Toast.makeText(MainActivity.this, "Result from homeActivity: " + returnValue, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -138,9 +149,13 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "수신된 메시지가 바이트 배열이 아닙니다.");
                 }
 
-                if(msg.what == CONNECTING_STATUS){ // 메시지가 연결 상태일 경우
-                    if(msg.arg1 == 1) // 연결 성공 시
+                if(msg.what == CONNECTING_STATUS) { // 메시지가 연결 상태일 경우
+                    if (msg.arg1 == 1) { // 연결 성공 시
                         mBluetoothStatus.setText(getString(R.string.BTConnected) + msg.obj);
+                        Intent intent = new Intent(MainActivity.this, home.class);
+                        homeActivityLauncher.launch(intent);
+                        finish();
+                    }
                     else // 연결 실패 시
                         mBluetoothStatus.setText(getString(R.string.BTconnFail));
                 }
