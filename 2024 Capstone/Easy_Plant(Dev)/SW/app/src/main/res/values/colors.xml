@@ -2,13 +2,4 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
-     <color name="bluetooth_button">#24A65E</color>
-    <color name="bluetooth_button_text">#FF000000</color>
-
-    <color name="bluetooth_background">#E3F2FD</color>
-    <color name="bluetooth_text">#93f8b3</color>
-
-    <color name="bluetooth_ListView_background">#FFFFFF</color>
-    
 </resources>
