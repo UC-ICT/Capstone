@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,58 +15,46 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.File;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
 
-import org.w3c.dom.Text;
-
-import java.io.File;
-
-public class MainActivity extends AppCompatActivity {
+public class home extends AppCompatActivity {
     final static String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
     final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
 
+    long readDay = System.currentTimeMillis();// 현재시간
+    Date date = new Date(readDay);// 현재시간 data지정
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");// 날짜 포맷 지정
+    String getTime = sdf.format(date);// 날짜 포맷 지정
 
-    long readDay = System.currentTimeMillis();//현재시간
-    Date date = new Date(readDay);//현재시간 data지정
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//날짜 포맷 지정
-    String getTime = sdf.format(date);//날짜 포맷 지정
+    int waterLevel = 0; // 물수위 변수
 
-    int waterLevel = 0; //물수위 변수
-
-
-    final int[] arrwaterlevel = {
-            R.drawable.waterlvel1, R.drawable.waterlvel2,
-            R.drawable.waterlvel3, R.drawable.waterlvel4
-    };
+    final int[] arrwaterlevel = {R.drawable.waterlvel1, R.drawable.waterlvel2, R.drawable.waterlvel3, R.drawable.waterlvel4}; // 수정 완료!
 
     ImageView ivPlant, ivwaterLevel;
     TextView tvPlantedPlantName, tvPlantedDay, tvgrowDay, tvCondition, tvwaterLevelLabel, tvdiary;
     EditText etWaterLevelInput;
-    Button btnWaterLeveltest;
+    Button btnWaterLeveltest, btnMenu, btnHome, btnPlant, btnDiary, btnLight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        setContentView(R.layout.activity_main);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_home);
 
+        // View 초기화
         final TextView title = findViewById(R.id.title); // 제목
-        final Button btnMenu = findViewById(R.id.btnMenu); // 동그란 버튼
-        final Button btnHome = findViewById(R.id.btnHome); // 홈 버튼
-        final Button btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
-        final Button btnDiary = findViewById(R.id.btnDiary); // 일기장 버튼
-        final Button btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
+        btnMenu = findViewById(R.id.btnMenu); // 동그란 버튼
+        btnHome = findViewById(R.id.btnHome); // 홈 버튼
+        btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
+        btnDiary = findViewById(R.id.btnDiary); // 일기장 버튼
+        btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
 
         tvwaterLevelLabel = findViewById(R.id.tvwaterLevelLabel); // 물수위 텍스트
         ivwaterLevel = findViewById(R.id.ivwaterLevel); // 물 수위 이미지
@@ -79,10 +66,7 @@ public class MainActivity extends AppCompatActivity {
         tvPlantedDay = findViewById(R.id.tvPlantedDay); // 심은 날짜
         tvgrowDay = findViewById(R.id.tvgrowDay); // 키운 날짜
         tvCondition = findViewById(R.id.tvCondition); // 식물 상태
-
         tvdiary = findViewById(R.id.tvdiary); // 일기장 작성 여부
-
-
 
         title.setText(header[0]);
         btnHome.setText(menu[0]);
@@ -95,32 +79,14 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
         btnHome.setVisibility(View.GONE);
         btnPlant.setVisibility(View.GONE);
         btnLight.setVisibility(View.GONE);
         btnDiary.setVisibility(View.GONE);
 
-
-        //물 수위 센서 변화
-        btnWaterLeveltest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                waterlevelChange();
-            }
-                                             });
-
-
-        //일기 작성 여부
-        checkTodayDiary();
-
-
-        //심은 일수 계산, 식물 상태
-         growDay();
-
-         //심은 식물 이미지
-        plantImage();
+        //물 수위 센서 테스트 버튼
+        btnWaterLeveltest.setOnClickListener(v -> waterlevelChange()); // 수정 완료!
 
         // btnMenu 클릭 이벤트
         btnMenu.setOnClickListener(new View.OnClickListener() {
@@ -138,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                Intent intent = new Intent(home.this, home.class);
                 startActivity(intent);
                 finish();
                 fadeOutAnimation(btnHome);
@@ -153,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         btnPlant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Plant.class);
+                Intent intent = new Intent(home.this, Plant.class);
                 startActivity(intent);
                 finish();
             }
@@ -163,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         btnLight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Light.class);
+                Intent intent = new Intent(home.this, Light.class);
                 startActivity(intent);
                 finish();
             }
@@ -173,57 +139,57 @@ public class MainActivity extends AppCompatActivity {
         btnDiary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Diary.class);
+                Intent intent = new Intent(home.this, Diary.class);
                 startActivity(intent);
                 finish();
             }
         });
 
-
-
+        checkTodayDiary();
+        growDay();
     }
 
+    // 버튼 클릭 애니메이션(In)
     private void fadeInAnimation(View view) {
         Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         view.setVisibility(View.VISIBLE);
         view.startAnimation(fadeIn);
     }
 
+    // 버튼 클릭 애니메이션(Out)
     private void fadeOutAnimation(View view) {
         Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
         view.startAnimation(fadeOut);
         view.setVisibility(View.GONE);
     }
 
-
-
-
     private void waterlevelChange() {// 물수위 센서변화
         String waterLevelSensor = etWaterLevelInput.getText().toString();
+        int waterLevel = 0;
 
         try {
             // 문자열을 int로 변환
             waterLevel = Integer.parseInt(waterLevelSensor);
         } catch (NumberFormatException e) {
             // 입력된 문자열이 숫자가 아닐 경우 예외 처리
-
+            e.printStackTrace();
             Toast.makeText(this, "유효한 숫자를 입력하세요.", Toast.LENGTH_SHORT).show();
+            return; // 수정 완료!
         }
 
-        if (waterLevel == 0 && waterLevel < 30) {
+        if (waterLevel == 0) {
             tvwaterLevelLabel.setText("물을 채워주세요");
             ivwaterLevel.setImageResource(arrwaterlevel[3]);
-        } else if (waterLevel >= 30 && waterLevel <60) {
+        } else if (waterLevel >= 30 && waterLevel <= 60) {
             tvwaterLevelLabel.setText("부족해요");
             ivwaterLevel.setImageResource(arrwaterlevel[2]);
-        } else if (waterLevel >= 60 && waterLevel <100) {
+        } else if (waterLevel > 60 && waterLevel < 100) {
             tvwaterLevelLabel.setText("충분해요");
             ivwaterLevel.setImageResource(arrwaterlevel[1]);
         } else if (waterLevel >= 100) {
             tvwaterLevelLabel.setText("다 채웠어요");
             ivwaterLevel.setImageResource(arrwaterlevel[0]);
         }
-
     }
 
     public void checkTodayDiary() {// 오늘 일기 확인
@@ -245,68 +211,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void growDay() {
-
-        Intent intent = getIntent();//인텐트 받아오기
-
-        String plantName = intent.getStringExtra("plantName");
-
-        tvPlantedPlantName.setText(plantName);//심은 식물 이름
-
-
-        //int plantImage = intent.getIntExtra("plantImage", 0);//식물 이미지 번호
-
-
-        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
-        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
-
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
-        LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
-
+        LocalDate startDate = LocalDate.of(2024, 7, 1);//임시로 식물 심은날짜 지정
         LocalDate endDate = LocalDate.now();//현재 날짜
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
 
-        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);//날짜 차이 계산
+        tvPlantedDay.setText("심은 날짜 : " + startDate);//심은 날짜
 
-        tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
+        long growDay = ChronoUnit.DAYS.between(startDate, endDate);//일수 차이 계산
 
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-
-
-
-        // 식물 상태
-        if (daysBetween > 10) {
-            tvCondition.setText("수확 시기 입니다.");
-        } else {
-            tvCondition.setText("잘 자라고 있어요.");
-        }
-
-
-
+        tvgrowDay.setText("키운 날짜 : " + growDay + "일"); //키운 날짜 표시
     }
-
-    public void plantImage()plantImage() {// 심은 식물 이미지
-
-        String str1 = tvPlantedPlantName.getText().toString() ;
-
-
-        if (str1.equals("상추")) {
-            ivPlant.setImageResource(R.drawable.sangchu);
-        }
-        if (str1.equals("깻잎")) {
-            ivPlant.setImageResource(R.drawable.ggatnip);
-        }
-        if (str1.equals("스위트 바질")) {
-            ivPlant.setImageResource(R.drawable.sweet_basil);
-        }
-        if (str1.equals("애플 민트")) {
-            ivPlant.setImageResource(R.drawable.apple_mint);
-        }
-        if (str1.isEmpty()) {// 심은 식물이 없을 때
-
-        }
-    }
-
-
 }
-
