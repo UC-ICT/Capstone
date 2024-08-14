@@ -219,12 +219,13 @@ public class home extends AppCompatActivity {
 
         tvPlantedPlantName.setText(plantName);//심은 식물 이름
 
-        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
+        //String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
         //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
-
-
+       
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
-        LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
+        //LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
+
+        LocalDate startDate = LocalDate.now();
 
         LocalDate endDate = LocalDate.now();//현재 날짜
         tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
