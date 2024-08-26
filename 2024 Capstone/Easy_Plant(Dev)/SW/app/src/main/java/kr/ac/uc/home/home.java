@@ -146,8 +146,11 @@ public class home extends AppCompatActivity {
             }
         });
 
-        checkTodayDiary();
-        growDay();
+         checkTodayDiary();// 오늘 일기 확인
+        growName();// 심은 식물 이름
+        growDay();// 키운 날짜
+        condition();// 식물 상태
+        plantImage();// 심은 식물 이미지
     }
 
     // 버튼 클릭 애니메이션(In)
@@ -178,7 +181,7 @@ public class home extends AppCompatActivity {
             return; // 수정 완료!
         }
 
-       if (waterLevel == 0 && waterLevel < 30) {
+       if (waterLevel <= 0 && waterLevel < 30) {
             tvwaterLevelLabel.setText("물을 채워주세요");
             ivwaterLevel.setImageResource(arrwaterlevel[3]);
         } else if (waterLevel >= 30 && waterLevel <= 60) {
@@ -210,22 +213,25 @@ public class home extends AppCompatActivity {
             tvdiary.setText("오늘 일기가 없습니다."); // 일기가 없음을 표시
         }
     }
-
-   public void growDay() {// 키운 날짜
-
+public void growName(){
         Intent intent = getIntent();//인텐트 받아오기
 
         String plantName = intent.getStringExtra("plantName");
 
         tvPlantedPlantName.setText(plantName);//심은 식물 이름
 
-        //String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
-        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
-       
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
-        //LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
+    }
 
-        LocalDate startDate = LocalDate.now();
+   public void growDay() {// 키운 날짜
+
+        Intent intent = getIntent();//인텐트 받아오기
+
+        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
+        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
+        LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
 
         LocalDate endDate = LocalDate.now();//현재 날짜
         tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
@@ -235,19 +241,21 @@ public class home extends AppCompatActivity {
         tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
 
         tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
+       }
 
+public void condition() {// 식물 상태
 
+    //키운 날짜 받아오기
+    int growDay = Integer.parseInt(tvgrowDay.getText().toString());
 
-        // 식물 상태
-        if (daysBetween > 10) {
-            tvCondition.setText("수확 시기 입니다.");
-        } else {
-            tvCondition.setText("잘 자라고 있어요.");
-        }
-
-
-
+    // 식물 상태
+    if (growDay > 10) {
+        tvCondition.setText("수확 시기 입니다.");
+    } else {
+        tvCondition.setText("잘 자라고 있어요.");
     }
+
+}
 
     public void plantImage() {// 심은 식물 이미지
 
