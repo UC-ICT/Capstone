@@ -1,7 +1,11 @@
 package kr.ac.uc.home;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -15,13 +19,36 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class Light extends AppCompatActivity {
+    private final String TAG = Light.class.getSimpleName();
     final static String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
     final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_SEND)){
+                String waterLevel = intent.getStringExtra("WaterLevel");
+                String temperature = intent.getStringExtra("Temperature");
+                String humidity = intent.getStringExtra("Humidity");
+
+                // 여기서 Intent에 데이터가 잘 들어갔는지 확인
+                Log.d(TAG, "WaterLevel: " + waterLevel);
+                Log.d(TAG, "Temperature: " + temperature);
+                Log.d(TAG, "Humidity: " + humidity);
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_light);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SEND);
+        registerReceiver(receiver, filter);
+
 
         final Button btnHome = findViewById(R.id.btnHome); // 홈 버튼
         final Button btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
@@ -39,17 +66,12 @@ public class Light extends AppCompatActivity {
         btnDiary.setText(menu[3]);
 
 
-//        btnIntent.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-//            startActivity(intent);
-//            finish(); //현재 액티비티를 종료
-//        });
-
         // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
         btnHome.setVisibility(View.GONE);
         btnPlant.setVisibility(View.GONE);
         btnLight.setVisibility(View.GONE);
         btnDiary.setVisibility(View.GONE);
+
 
         // btnMenu 클릭 이벤트
         btnMenu.setOnClickListener(new View.OnClickListener() {

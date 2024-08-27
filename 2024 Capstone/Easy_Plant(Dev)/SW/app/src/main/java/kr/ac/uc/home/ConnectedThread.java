@@ -53,8 +53,6 @@ public class ConnectedThread extends Thread{
                     bytes = mmInStream.available(); // 다시 읽을 수 있는 바이트 수 확인
                     bytes = mmInStream.read(buffer, 0, bytes); // 실제로 읽은 바이트 수를 버퍼에 저장
 
-                    String readMessage = new String(buffer, 0, bytes, StandardCharsets.UTF_8); // 아두이노에서 보낸 데이터 읽기
-
                     mHandler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget(); // 읽은 바이트를 핸들러에 메시지로 보내서 UI 업데이트
                 }

@@ -147,7 +147,7 @@ public class home extends AppCompatActivity {
         });
 
         checkTodayDiary();
-        growDay();
+        //growDay(); // 그로우데이 수정해줘슈바앍데ㅑㅙ핟ㅈ
     }
 
     // 버튼 클릭 애니메이션(In)
@@ -211,42 +211,43 @@ public class home extends AppCompatActivity {
         }
     }
 
-   public void growDay() {// 키운 날짜
-
-        Intent intent = getIntent();//인텐트 받아오기
-
-        String plantName = intent.getStringExtra("plantName");
-
-        tvPlantedPlantName.setText(plantName);//심은 식물 이름
-
-        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
-        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
-
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
-        LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
-
-        LocalDate endDate = LocalDate.now();//현재 날짜
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-
-        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);//날짜 차이 계산
-
-        tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
-
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-
-
-
-        // 식물 상태
-        if (daysBetween > 10) {
-            tvCondition.setText("수확 시기 입니다.");
-        } else {
-            tvCondition.setText("잘 자라고 있어요.");
-        }
-
-
-
-    }
+//   public void growDay() {// 키운 날짜
+//
+//        Intent intent = getIntent();//인텐트 받아오기
+//
+//        String plantName = intent.getStringExtra("plantName");
+//
+//        tvPlantedPlantName.setText(plantName);//심은 식물 이름
+//
+//        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
+//        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
+//
+//
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
+//        //LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
+//
+//        LocalDate startDate = LocalDate.parse(dateData, formatter);
+//        LocalDate endDate = LocalDate.now();//현재 날짜
+//        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
+//
+//        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);//날짜 차이 계산
+//
+//        tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
+//
+//        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
+//
+//
+//
+//        // 식물 상태
+//        if (daysBetween > 10) {
+//            tvCondition.setText("수확 시기 입니다.");
+//        } else {
+//            tvCondition.setText("잘 자라고 있어요.");
+//        }
+//
+//
+//
+//    }
 
     public void plantImage() {// 심은 식물 이미지
 
