@@ -146,16 +146,15 @@ public class home extends AppCompatActivity {
             }
         });
 
-<<<<<<< HEAD
         checkTodayDiary();
         //growDay(); // 그로우데이 수정해줘슈바앍데ㅑㅙ핟ㅈ
-=======
+
          checkTodayDiary();// 오늘 일기 확인
         growName();// 심은 식물 이름
         growDay();// 키운 날짜
         condition();// 식물 상태
         plantImage();// 심은 식물 이미지
->>>>>>> f392d72d2ea1a1624774be4d6f5ae77229f06919
+
     }
 
     // 버튼 클릭 애니메이션(In)
@@ -218,7 +217,7 @@ public class home extends AppCompatActivity {
             tvdiary.setText("오늘 일기가 없습니다."); // 일기가 없음을 표시
         }
     }
-<<<<<<< HEAD
+
 
 //   public void growDay() {// 키운 날짜
 //
@@ -257,7 +256,7 @@ public class home extends AppCompatActivity {
 //
 //
 //    }
-=======
+
 public void growName(){
         Intent intent = getIntent();//인텐트 받아오기
 
@@ -299,7 +298,6 @@ public void condition() {// 식물 상태
     } else {
         tvCondition.setText("잘 자라고 있어요.");
     }
->>>>>>> f392d72d2ea1a1624774be4d6f5ae77229f06919
 
 }
 
