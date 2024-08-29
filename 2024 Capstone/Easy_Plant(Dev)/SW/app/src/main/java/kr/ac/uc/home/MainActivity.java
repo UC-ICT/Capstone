@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity; // 추가 AppCompat 상호작용
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.IOException; // IO 예외 클래스 임포트
 import java.lang.reflect.Method; // 리플렉션 메소드 클래스 임포트
@@ -45,6 +46,8 @@ import java.util.UUID; // UUID 클래스 임포트
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = MainActivity.class.getSimpleName(); // 로그 태그
+    static final String ACTION_SEND_DATA = "com.example.app.SEND_DATA";
+    public static final String SENSOR_DATA = "Sensor Data";
 
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "임의"의 고유 식별자
 
@@ -57,9 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
     // GUI 구성 요소
     private TextView mBluetoothStatus; // 블루투스 상태 텍스트뷰
-    private TextView tvWaterLevel;
-    private TextView tvTemp;
-    private TextView tvHumi;
     private Button mScanBtn; // 스캔 버튼
     private Button mOffBtn; // 블루투스 끄기 버튼
     private Button mListPairedDevicesBtn; // 페어링된 장치 목록 버튼
@@ -109,13 +109,9 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
 
         mBluetoothStatus = (TextView)findViewById(R.id.bluetooth_status); // 블루투스 상태 텍스트뷰 초기화
-        tvWaterLevel = (TextView) findViewById(R.id.tvWaterLevel);
-        tvTemp = (TextView) findViewById(R.id.tvTemp);
-        tvHumi = (TextView) findViewById(R.id.tvHumi);
         mScanBtn = (Button)findViewById(R.id.scan); // 스캔 버튼 초기화
         mOffBtn = (Button)findViewById(R.id.off); // 블루투스 끄기 버튼 초기화
         mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn); // 페어링된 장치 목록 버튼 초기화
-        mLED1 = (CheckBox)findViewById(R.id.checkbox_led_1); // LED1 체크박스 초기화
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 블루투스 어레이 어댑터 초기화
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // 블루투스 어댑터 초기화
@@ -135,21 +131,22 @@ public class MainActivity extends AppCompatActivity {
                 if(msg.what == MESSAGE_READ){ // 메시지가 읽기 메시지일 경우
                     byte[] readBuffer = (byte[]) msg.obj;
                     String readMessage = new String(readBuffer, StandardCharsets.UTF_8);
-                    // 데이터를 구분하여 TextView에 표시
-                    String[] data = readMessage.split("\n");
-                    for (int i = 0; i < data.length - 1; i++){
-                        Log.d(TAG, "센서데이터: " + data[i]);
-                    }
+                    // 데이터를 구분하여 Intent에 넣기
+                    String data = readMessage.trim();
+
+                    sendDataToActivity(data);
+                    Log.d(TAG, "온도: " + data);
+
                 }else{
                     Log.e(TAG, "수신된 메시지가 바이트 배열이 아닙니다.");
                 }
-
+                mConnectedThread.write("1");
                 if(msg.what == CONNECTING_STATUS) { // 메시지가 연결 상태일 경우
                     if (msg.arg1 == 1) { // 연결 성공 시
                         mBluetoothStatus.setText(getString(R.string.BTConnected) + msg.obj);
-                        //Intent homeIntent = new Intent(MainActivity.this, home.class);
-                        //homeActivityLauncher.launch(homeIntent);
-                        //finish();
+                        Intent homeIntent = new Intent(MainActivity.this, home.class);
+                        homeActivityLauncher.launch(homeIntent);
+                        finish();
                     }
                     else // 연결 실패 시
                         mBluetoothStatus.setText(getString(R.string.BTconnFail));
@@ -163,20 +160,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),getString(R.string.sBTdevNF),Toast.LENGTH_SHORT).show(); // 토스트 메시지 출력
         }
         else {
-            // LED1 체크박스 클릭 리스너 설정
-            mLED1.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
-                    if(mConnectedThread != null) { // 스레드가 생성된 경우
-                        if (mLED1.isChecked()){
-                            mConnectedThread.write("1"); // "1" 메시지 전송
-                        }else{
-                            mConnectedThread.write("0"); // "0" 메시지 전송
-                        }
-                    }
-                }
-            });
-
             // 스캔 버튼 클릭 리스너 설정
             mScanBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -203,6 +186,14 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    private void sendDataToActivity(String data) {
+        Intent intent = new Intent(ACTION_SEND_DATA);
+        intent.putExtra(SENSOR_DATA, data);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        Log.d(TAG, "로컬매니저가 보내는 Extra값: " + intent);
+    }
+
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
@@ -271,8 +262,8 @@ public class MainActivity extends AppCompatActivity {
     private void bluetoothOff() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
             mBTAdapter.disable();
-            mBluetoothStatus.setText(getString(R.string.sBTdisabl));
             Toast.makeText(getApplicationContext(), "Bluetooth turned Off", Toast.LENGTH_SHORT).show();
+            mConnectedThread.cancel();
         } else {
             checkPermissions(); // 필요한 권한 요청
         }

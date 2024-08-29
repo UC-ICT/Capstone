@@ -4,24 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingTop="16dp"
-    android:paddingRight="16dp"
-    android:paddingBottom="16dp"
-    tools:context="kr.ac.uc.home.MainActivity"
-    >
+    android:padding="16dp">
 
-    <CheckBox
-        android:id="@+id/checkbox_led_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:checked="false"
-        android:scaleX="1.7"
-        android:scaleY="1.7"
-        android:text="LED 켜기/끄기"
-        android:textStyle="bold" />
+    <!-- 상태 정보 표시 -->
+
+    <!-- 버튼들 -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +25,14 @@
             android:text="RX:"
             android:textStyle="bold" />
 
-
+        <TextView
+            android:id="@+id/read_buffer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="&lt;Read Buffer>" />
     </LinearLayout>
 
     <LinearLayout
@@ -110,4 +104,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice" />
+
 </LinearLayout>

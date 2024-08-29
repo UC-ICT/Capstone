@@ -1,5 +1,8 @@
 package kr.ac.uc.home;
 
+import static kr.ac.uc.home.MainActivity.ACTION_SEND_DATA;
+import static kr.ac.uc.home.MainActivity.SENSOR_DATA;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,28 +20,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class Light extends AppCompatActivity {
     private final String TAG = Light.class.getSimpleName();
     final static String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
     final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_SEND)){
-                String waterLevel = intent.getStringExtra("WaterLevel");
-                String temperature = intent.getStringExtra("Temperature");
-                String humidity = intent.getStringExtra("Humidity");
-
-                // 여기서 Intent에 데이터가 잘 들어갔는지 확인
-                Log.d(TAG, "WaterLevel: " + waterLevel);
-                Log.d(TAG, "Temperature: " + temperature);
-                Log.d(TAG, "Humidity: " + humidity);
-            }
-        }
-    };
-
+    private Button btnHome, btnPlant, btnLight, btnDiary, btnMenu;
+    private TextView title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,16 +36,12 @@ public class Light extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_light);
 
-        IntentFilter filter = new IntentFilter(Intent.ACTION_SEND);
-        registerReceiver(receiver, filter);
-
-
-        final Button btnHome = findViewById(R.id.btnHome); // 홈 버튼
-        final Button btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
-        final Button btnDiary = findViewById(R.id.btnDiary); // 일기장 버튼
-        final Button btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
-        final Button btnMenu = findViewById(R.id.btnMenu); // 메뉴 버튼
-        final TextView title = findViewById(R.id.title); // 제목
+        btnHome = findViewById(R.id.btnHome);
+        btnPlant = findViewById(R.id.btnPlant);
+        btnLight = findViewById(R.id.btnLight);
+        btnDiary = findViewById(R.id.btnDiary);
+        btnMenu = findViewById(R.id.btnMenu);
+        title = findViewById(R.id.title);
 
 
 
@@ -71,7 +57,6 @@ public class Light extends AppCompatActivity {
         btnPlant.setVisibility(View.GONE);
         btnLight.setVisibility(View.GONE);
         btnDiary.setVisibility(View.GONE);
-
 
         // btnMenu 클릭 이벤트
         btnMenu.setOnClickListener(new View.OnClickListener() {

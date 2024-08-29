@@ -1,7 +1,14 @@
 package kr.ac.uc.home;
 
+import static kr.ac.uc.home.MainActivity.ACTION_SEND_DATA;
+import static kr.ac.uc.home.MainActivity.SENSOR_DATA;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -16,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -28,6 +36,7 @@ import java.util.Date;
 public class home extends AppCompatActivity {
     final static String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
     final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
+    private final String TAG = home.class.getSimpleName();
 
     long readDay = System.currentTimeMillis();// 현재시간
     Date date = new Date(readDay);// 현재시간 data지정
@@ -42,6 +51,19 @@ public class home extends AppCompatActivity {
     TextView tvPlantedPlantName, tvPlantedDay, tvgrowDay, tvCondition, tvwaterLevelLabel, tvdiary;
     EditText etWaterLevelInput;
     Button btnWaterLeveltest, btnMenu, btnHome, btnPlant, btnDiary, btnLight;
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_SEND_DATA)) {
+                String receivedData = intent.getStringExtra(SENSOR_DATA);
+                Log.d(TAG, "리시브 데이터: " + receivedData);
+
+                waterLevel = Integer.parseInt(receivedData);
+                waterlevelChange(waterLevel);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +81,6 @@ public class home extends AppCompatActivity {
 
         tvwaterLevelLabel = findViewById(R.id.tvwaterLevelLabel); // 물수위 텍스트
         ivwaterLevel = findViewById(R.id.ivwaterLevel); // 물 수위 이미지
-        etWaterLevelInput = findViewById(R.id.etWaterLevelInput); // 물 수위 텍스트 입력
-        btnWaterLeveltest = findViewById(R.id.btnWaterLeveltest); // 물수위 테스트 버튼
 
         ivPlant = findViewById(R.id.ivPlant); // 심은 식물 이미지
         tvPlantedPlantName = findViewById(R.id.tvPlantedPlantName); // 심은 식물 이름
@@ -75,6 +95,7 @@ public class home extends AppCompatActivity {
         btnLight.setText(menu[2]);
         btnDiary.setText(menu[3]);
 
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -85,9 +106,6 @@ public class home extends AppCompatActivity {
         btnPlant.setVisibility(View.GONE);
         btnLight.setVisibility(View.GONE);
         btnDiary.setVisibility(View.GONE);
-
-        //물 수위 센서 테스트 버튼
-        btnWaterLeveltest.setOnClickListener(v -> waterlevelChange()); // 수정 완료!
 
         // btnMenu 클릭 이벤트
         btnMenu.setOnClickListener(new View.OnClickListener() {
@@ -148,11 +166,11 @@ public class home extends AppCompatActivity {
 
         checkTodayDiary();
         //growDay(); // 그로우데이 수정해줘슈바앍데ㅑㅙ핟ㅈ
-
-         checkTodayDiary();// 오늘 일기 확인
+        waterlevelChange(waterLevel);
+        checkTodayDiary();// 오늘 일기 확인
         growName();// 심은 식물 이름
-        growDay();// 키운 날짜
-        condition();// 식물 상태
+        //growDay();// 키운 날짜
+        //condition();// 식물 상태
         plantImage();// 심은 식물 이미지
 
     }
@@ -171,30 +189,19 @@ public class home extends AppCompatActivity {
         view.setVisibility(View.GONE);
     }
 
-    private void waterlevelChange() {// 물수위 센서변화
-        String waterLevelSensor = etWaterLevelInput.getText().toString();
-        int waterLevel = 0;
+    private void waterlevelChange(int waterLevel) {// 물수위 센서변화
+        this.waterLevel = waterLevel;
 
-        try {
-            // 문자열을 int로 변환
-            waterLevel = Integer.parseInt(waterLevelSensor);
-        } catch (NumberFormatException e) {
-            // 입력된 문자열이 숫자가 아닐 경우 예외 처리
-            e.printStackTrace();
-            Toast.makeText(this, "유효한 숫자를 입력하세요.", Toast.LENGTH_SHORT).show();
-            return; // 수정 완료!
-        }
-
-       if (waterLevel == 0 && waterLevel < 30) {
+        if (waterLevel == 0) {
             tvwaterLevelLabel.setText("물을 채워주세요");
             ivwaterLevel.setImageResource(arrwaterlevel[3]);
-        } else if (waterLevel >= 30 && waterLevel <= 60) {
+        } else if (waterLevel <= 30) {
             tvwaterLevelLabel.setText("부족해요");
             ivwaterLevel.setImageResource(arrwaterlevel[2]);
-        } else if (waterLevel > 60 && waterLevel < 100) {
+        } else if (waterLevel <= 60) {
             tvwaterLevelLabel.setText("충분해요");
             ivwaterLevel.setImageResource(arrwaterlevel[1]);
-        } else if (waterLevel >= 100) {
+        } else {
             tvwaterLevelLabel.setText("다 채웠어요");
             ivwaterLevel.setImageResource(arrwaterlevel[0]);
         }
@@ -216,6 +223,24 @@ public class home extends AppCompatActivity {
             tvdiary.setVisibility(View.VISIBLE); // 텍스트뷰 표시
             tvdiary.setText("오늘 일기가 없습니다."); // 일기가 없음을 표시
         }
+    }
+    protected void onResume() { // 브로드캐스트 실행
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ACTION_SEND_DATA);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    protected void onPause() { // 브로드캐스트 중지
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+    }
+
+    private void updateUI(String data) {
+        // 데이터를 사용하여 UI 업데이트
+        // 예: TextView textView = findViewById(R.id.dataTextView);
+        //     textView.setText(data);
+
     }
 
 
@@ -257,7 +282,7 @@ public class home extends AppCompatActivity {
 //
 //    }
 
-public void growName(){
+    public void growName(){
         Intent intent = getIntent();//인텐트 받아오기
 
         String plantName = intent.getStringExtra("plantName");
@@ -266,7 +291,7 @@ public void growName(){
 
     }
 
-   public void growDay() {// 키운 날짜
+   /*public void growDay() {// 키운 날짜
 
         Intent intent = getIntent();//인텐트 받아오기
 
@@ -285,8 +310,8 @@ public void growName(){
         tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
 
         tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-       }
-
+       }*/
+/*
 public void condition() {// 식물 상태
 
     //키운 날짜 받아오기
@@ -299,7 +324,7 @@ public void condition() {// 식물 상태
         tvCondition.setText("잘 자라고 있어요.");
     }
 
-}
+}*/
 
     public void plantImage() {// 심은 식물 이미지
 
