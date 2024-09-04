@@ -1,7 +1,14 @@
 package kr.ac.uc.home;
 
+import static kr.ac.uc.home.MainActivity.ACTION_SEND_DATA;
+import static kr.ac.uc.home.MainActivity.SENSOR_DATA;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -13,22 +20,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class Light extends AppCompatActivity {
+    private final String TAG = Light.class.getSimpleName();
     final static String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
     final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
+
+    private Button btnHome, btnPlant, btnLight, btnDiary, btnMenu;
+    private TextView title;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_light);
 
-        final Button btnHome = findViewById(R.id.btnHome); // 홈 버튼
-        final Button btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
-        final Button btnDiary = findViewById(R.id.btnDiary); // 일기장 버튼
-        final Button btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
-        final Button btnMenu = findViewById(R.id.btnMenu); // 메뉴 버튼
-        final TextView title = findViewById(R.id.title); // 제목
+        btnHome = findViewById(R.id.btnHome);
+        btnPlant = findViewById(R.id.btnPlant);
+        btnLight = findViewById(R.id.btnLight);
+        btnDiary = findViewById(R.id.btnDiary);
+        btnMenu = findViewById(R.id.btnMenu);
+        title = findViewById(R.id.title);
 
 
 
@@ -38,12 +51,6 @@ public class Light extends AppCompatActivity {
         btnLight.setText(menu[2]);
         btnDiary.setText(menu[3]);
 
-
-//        btnIntent.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-//            startActivity(intent);
-//            finish(); //현재 액티비티를 종료
-//        });
 
         // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
         btnHome.setVisibility(View.GONE);

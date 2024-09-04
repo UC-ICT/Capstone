@@ -40,6 +40,20 @@
             android:background="@drawable/border_style"/>
     </LinearLayout>
 
+
+    <TextView
+        android:id="@+id/tvTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="온도(C): "
+        android:textSize="40sp"/>
+    <TextView
+        android:id="@+id/tvHumi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="습도(%): "
+        android:textSize="40sp"/>
+
     <!--Button-->
     <LinearLayout
         android:layout_width="match_parent"
