@@ -34,8 +34,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity; // 추가 AppCompat 상호작용
 import androidx.core.app.ActivityCompat;
+
+// --------------------------------------------------------------------------
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+// -------------------------------------------------------------------------------------
 
 import java.io.IOException; // IO 예외 클래스 임포트
 import java.lang.reflect.Method; // 리플렉션 메소드 클래스 임포트
@@ -46,8 +49,11 @@ import java.util.UUID; // UUID 클래스 임포트
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = MainActivity.class.getSimpleName(); // 로그 태그
+
+    // -------------------------------------------------------------------------------------
     static final String ACTION_SEND_DATA = "com.example.app.SEND_DATA";
     public static final String SENSOR_DATA = "Sensor Data";
+    // -------------------------------------------------------------------------------------
 
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "임의"의 고유 식별자
 
@@ -60,9 +66,17 @@ public class MainActivity extends AppCompatActivity {
 
     // GUI 구성 요소
     private TextView mBluetoothStatus; // 블루투스 상태 텍스트뷰
+
+    private TextView tvWaterLevel; //______________________________________
+    private TextView tvTemp; //______________________________________
+    private TextView tvHumi; //______________________________________
+
     private Button mScanBtn; // 스캔 버튼
     private Button mOffBtn; // 블루투스 끄기 버튼
     private Button mListPairedDevicesBtn; // 페어링된 장치 목록 버튼
+
+    private Button mDiscoverBtn; // 장치 검색 버튼  //______________________________________
+
     private ListView mDevicesListView; // 장치 리스트뷰
     private CheckBox mLED1; // LED1 체크박스
 
@@ -77,12 +91,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> enableBluetoothLauncher;
     private ActivityResultLauncher<Intent> homeActivityLauncher;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         // ActivityResultLauncher 초기화
         enableBluetoothLauncher = registerForActivityResult(
@@ -109,9 +121,14 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
 
         mBluetoothStatus = (TextView)findViewById(R.id.bluetooth_status); // 블루투스 상태 텍스트뷰 초기화
+        tvWaterLevel = (TextView) findViewById(R.id.tvWaterLevel);  //______________________________________
+        tvTemp = (TextView) findViewById(R.id.tvTemp); //______________________________________
+        tvHumi = (TextView) findViewById(R.id.tvHumi); //______________________________________
         mScanBtn = (Button)findViewById(R.id.scan); // 스캔 버튼 초기화
         mOffBtn = (Button)findViewById(R.id.off); // 블루투스 끄기 버튼 초기화
+        mDiscoverBtn = (Button)findViewById(R.id.discover); // 장치 검색 버튼 초기화 //______________________________________
         mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn); // 페어링된 장치 목록 버튼 초기화
+        mLED1 = (CheckBox)findViewById(R.id.checkbox_led_1); // LED1 체크박스 초기화 //______________________________________
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 블루투스 어레이 어댑터 초기화
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // 블루투스 어댑터 초기화
@@ -131,21 +148,35 @@ public class MainActivity extends AppCompatActivity {
                 if(msg.what == MESSAGE_READ){ // 메시지가 읽기 메시지일 경우
                     byte[] readBuffer = (byte[]) msg.obj;
                     String readMessage = new String(readBuffer, StandardCharsets.UTF_8);
-                    // 데이터를 구분하여 Intent에 넣기
-                    String data = readMessage.trim();
-
-                    sendDataToActivity(data);
-                    Log.d(TAG, "온도: " + data);
-
+                    // 데이터를 구분하여 TextView에 표시
+                    String[] data = readMessage.split("\n");
+                    for (String datum : data) {
+                        if (datum.startsWith("WaterLevel:")) {
+                            tvWaterLevel.setText(datum.substring("WaterLevel:".length()).trim());
+                        } else if (datum.startsWith("Temperature:")) {
+                            tvTemp.setText(datum.substring("Temperature:".length()).trim());
+                        } else if (datum.startsWith("Humidity:")) {
+                            tvHumi.setText(datum.substring("Humidity:".length()).trim());
+                        }
+                    }
                 }else{
                     Log.e(TAG, "수신된 메시지가 바이트 배열이 아닙니다.");
                 }
+
+                // ---------------------------------------
                 mConnectedThread.write("1");
+                // ---------------------------------------
+
+
                 if(msg.what == CONNECTING_STATUS) { // 메시지가 연결 상태일 경우
                     if (msg.arg1 == 1) { // 연결 성공 시
                         mBluetoothStatus.setText(getString(R.string.BTConnected) + msg.obj);
+                        //Intent intent = new Intent(MainActivity.this, home.class);
+                        //homeActivityLauncher.launch(intent);
+                        // ---------------------------------------
                         Intent homeIntent = new Intent(MainActivity.this, home.class);
                         homeActivityLauncher.launch(homeIntent);
+                        // ---------------------------------------
                         finish();
                     }
                     else // 연결 실패 시
@@ -154,12 +185,35 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+
         // 블루투스 어댑터가 없으면 블루투스를 지원하지 않는 장치
         if (mBTArrayAdapter == null) {
             mBluetoothStatus.setText(getString(R.string.sBTstaNF)); // 블루투스 상태 설정
             Toast.makeText(getApplicationContext(),getString(R.string.sBTdevNF),Toast.LENGTH_SHORT).show(); // 토스트 메시지 출력
         }
         else {
+            //_______________________________________________________
+            // 바로 homeActivity 로 이동
+            mBluetoothStatus.setText(getString(R.string.BTConnected) + "SMJ");
+            Intent intent = new Intent(MainActivity.this, home.class);
+            homeActivityLauncher.launch(intent);
+            finish();
+
+            // LED1 체크박스 클릭 리스너 설정
+            mLED1.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    if(mConnectedThread != null) { // 스레드가 생성된 경우
+                        if (mLED1.isChecked()){
+                            mConnectedThread.write("1"); // "1" 메시지 전송
+                        }else{
+                            mConnectedThread.write("0"); // "0" 메시지 전송
+                        }
+                    }
+                }
+            });
+            //_______________________________________________________
+
             // 스캔 버튼 클릭 리스너 설정
             mScanBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -183,16 +237,25 @@ public class MainActivity extends AppCompatActivity {
                     listPairedDevices(); // 페어링된 장치 목록 표시 메서드 호출
                 }
             });
-
+            //_______________________________________________________
+            // 장치 검색 버튼 클릭 리스너 설정
+            mDiscoverBtn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    discover(); // 장치 검색 메서드 호출
+                }
+            });
+            //_______________________________________________________
         }
     }
-
+    // ---------------------------
     private void sendDataToActivity(String data) {
         Intent intent = new Intent(ACTION_SEND_DATA);
         intent.putExtra(SENSOR_DATA, data);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         Log.d(TAG, "로컬매니저가 보내는 Extra값: " + intent);
     }
+    // ---------------------------
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -262,12 +325,39 @@ public class MainActivity extends AppCompatActivity {
     private void bluetoothOff() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
             mBTAdapter.disable();
+            mBluetoothStatus.setText(getString(R.string.sBTdisabl)); // ___________________________________________
             Toast.makeText(getApplicationContext(), "Bluetooth turned Off", Toast.LENGTH_SHORT).show();
+            // -----------------------------------
             mConnectedThread.cancel();
+            // -----------------------------------
         } else {
             checkPermissions(); // 필요한 권한 요청
         }
     }
+
+    // ___________________________________________
+    // 장치 검색 메서드
+    private void discover() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (mBTAdapter.isDiscovering()) {
+                mBTAdapter.cancelDiscovery();
+                Toast.makeText(getApplicationContext(), getString(R.string.DisStop), Toast.LENGTH_SHORT).show();
+            } else {
+                if (mBTAdapter.isEnabled()) {
+                    mBTArrayAdapter.clear();
+                    mBTAdapter.startDiscovery();
+                    Toast.makeText(getApplicationContext(), getString(R.string.DisStart), Toast.LENGTH_SHORT).show();
+                    registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.BTnotOn), Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            checkPermissions(); // 필요한 권한 요청
+        }
+    }
+    // ___________________________________________
 
     // 브로드캐스트 리시버 객체
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
@@ -383,5 +473,4 @@ public class MainActivity extends AppCompatActivity {
         BluetoothSocket socket = device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
         return socket;
     }
-
 }

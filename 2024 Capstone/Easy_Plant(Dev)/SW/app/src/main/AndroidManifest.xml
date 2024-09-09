@@ -6,7 +6,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
     <application
@@ -19,9 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Home"
         tools:targetApi="31">
-        <activity
-            android:name=".Light"
-            android:exported="false" />
+
         <activity
             android:name=".Diary"
             android:exported="false" />
@@ -29,20 +29,35 @@
             android:name=".Plant"
             android:exported="false" />
         <activity
+            android:name=".Game"
+            android:exported="false" />
+        <activity
             android:name=".home"
             android:exported="false" />
         <activity
+            android:name=".SelectDifficulty"
+            android:exported="false" />
+
+        <activity
+            android:name=".EasyDifficulty"
+            android:exported="false" />
+        <activity
+            android:name=".NormalDifficulty"
+            android:exported="false" />
+        <activity
+            android:name=".HardDifficulty"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service android:name=".ArduinoDataService" />
-
     </application>
 
 </manifest>
