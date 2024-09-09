@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ButtonFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="bottom">
+
+        <!--style="?android:attr/borderlessButtonStyle" 버튼 그림자 제거-->
+        <android.widget.Button
+            android:id="@+id/btnHome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:drawableTop="@drawable/home_size"
+            android:text="홈"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <android.widget.Button
+            android:id="@+id/btnDiary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:drawableTop="@drawable/diary_size"
+            android:text="달력"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <android.widget.Button
+            android:id="@+id/btnPlant"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:drawableTop="@drawable/plant_size"
+            android:text="씨앗"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <android.widget.Button
+            android:id="@+id/btnGame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:drawableTop="@drawable/game_size"
+            android:text="게임"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+    </LinearLayout>
+
+</FrameLayout>

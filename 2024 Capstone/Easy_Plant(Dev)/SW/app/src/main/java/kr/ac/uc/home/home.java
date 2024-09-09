@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.lights.Light;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.Menu;//---------------------------
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,9 +35,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
-public class home extends AppCompatActivity {
-    final static String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
-    final static String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
+public class home extends AppCompatActivity implements ButtonFragment.OnButtonClickListener {
+
     private final String TAG = home.class.getSimpleName();
 
     long readDay = System.currentTimeMillis();// 현재시간
@@ -50,7 +51,8 @@ public class home extends AppCompatActivity {
     ImageView ivPlant, ivwaterLevel;
     TextView tvPlantedPlantName, tvPlantedDay, tvgrowDay, tvCondition, tvwaterLevelLabel, tvdiary;
     EditText etWaterLevelInput;
-    Button btnWaterLeveltest, btnMenu, btnHome, btnPlant, btnDiary, btnLight;
+
+    Button btnWaterLeveltest;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -73,11 +75,6 @@ public class home extends AppCompatActivity {
 
         // View 초기화
         final TextView title = findViewById(R.id.title); // 제목
-        btnMenu = findViewById(R.id.btnMenu); // 동그란 버튼
-        btnHome = findViewById(R.id.btnHome); // 홈 버튼
-        btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
-        btnDiary = findViewById(R.id.btnDiary); // 일기장 버튼
-        btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
 
         tvwaterLevelLabel = findViewById(R.id.tvwaterLevelLabel); // 물수위 텍스트
         ivwaterLevel = findViewById(R.id.ivwaterLevel); // 물 수위 이미지
@@ -89,80 +86,21 @@ public class home extends AppCompatActivity {
         tvCondition = findViewById(R.id.tvCondition); // 식물 상태
         tvdiary = findViewById(R.id.tvdiary); // 일기장 작성 여부
 
-        title.setText(header[0]);
-        btnHome.setText(menu[0]);
-        btnPlant.setText(menu[1]);
-        btnLight.setText(menu[2]);
-        btnDiary.setText(menu[3]);
-
+        //뷰 초기화 및 기타 코드
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.btnFragment, new ButtonFragment()) // Use fragment_container instead of main
+                    .commit();
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
-        btnHome.setVisibility(View.GONE);
-        btnPlant.setVisibility(View.GONE);
-        btnLight.setVisibility(View.GONE);
-        btnDiary.setVisibility(View.GONE);
 
-        // btnMenu 클릭 이벤트
-        btnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnMenu.setVisibility(View.GONE); // btnMenu 숨기기
-                fadeInAnimation(btnHome);
-                fadeInAnimation(btnPlant);
-                fadeInAnimation(btnLight);
-                fadeInAnimation(btnDiary);
-            }
-        });
 
-        // btnHome 클릭 이벤트
-        btnHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(home.this, home.class);
-                startActivity(intent);
-                finish();
-                fadeOutAnimation(btnHome);
-                fadeOutAnimation(btnPlant);
-                fadeOutAnimation(btnLight);
-                fadeOutAnimation(btnDiary);
-                btnMenu.setVisibility(View.VISIBLE); // btnMenu 보이기
-            }
-        });
 
-        // btnPlant 클릭 이벤트
-        btnPlant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(home.this, Plant.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        // btnLight 클릭 이벤트
-        btnLight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(home.this, Light.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        // btnDiary 클릭 이벤트
-        btnDiary.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(home.this, Diary.class);
-                startActivity(intent);
-                finish();
-            }
-        });
 
         checkTodayDiary();
         //growDay(); // 그로우데이 수정해줘슈바앍데ㅑㅙ핟ㅈ
@@ -175,19 +113,24 @@ public class home extends AppCompatActivity {
 
     }
 
-    // 버튼 클릭 애니메이션(In)
-    private void fadeInAnimation(View view) {
-        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        view.setVisibility(View.VISIBLE);
-        view.startAnimation(fadeIn);
+    @Override
+    public void onButtonClicked(int buttonId) { // 인터페이스 메소드 구현
+        // 버튼 ID에 따라 액티비티에 텍스트 출력
+        if (buttonId == R.id.btnDiary) {
+            Intent intent = new Intent(home.this, Diary.class);
+            startActivity(intent);
+            finish();
+        } else if (buttonId == R.id.btnPlant) {
+            Intent intent = new Intent(home.this, Plant.class);
+            startActivity(intent);
+            finish();
+        } else if (buttonId == R.id.btnGame) {
+            Intent intent = new Intent(home.this, Game.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
-    // 버튼 클릭 애니메이션(Out)
-    private void fadeOutAnimation(View view) {
-        Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-        view.startAnimation(fadeOut);
-        view.setVisibility(View.GONE);
-    }
 
     private void waterlevelChange(int waterLevel) {// 물수위 센서변화
         this.waterLevel = waterLevel;

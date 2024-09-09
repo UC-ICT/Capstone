@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.hardware.lights.Light;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -22,9 +23,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Calendar;
 
-public class Diary extends AppCompatActivity {
-    final String[] header = {"이지플랜트", "식물 설정", "조명 설정", "일기장"};
-    final String[] menu = {"홈", "식물 설정", "조명 설정", "일기장"};
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import android.view.Menu;
+
+public class Diary extends AppCompatActivity implements ButtonFragment.OnButtonClickListener {
+
     public String readDay = null; // 선택한 날짜를 저장할 변수
     public String tDate = null; // 다이얼 로그 창에서 날짜 표기
     public String str = null; // 일기 내용을 저장할 변수
@@ -37,11 +42,6 @@ public class Diary extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_diary);
 
-        final Button btnHome = findViewById(R.id.btnHome); // 홈 버튼
-        final Button btnPlant = findViewById(R.id.btnPlant); // 식물 설정 버튼
-        final Button btnDiary = findViewById(R.id.btnDiary); // 일기장 버튼
-        final Button btnLight = findViewById(R.id.btnLight); // 조명 설정 버튼
-        final Button btnMenu = findViewById(R.id.btnMenu); // 메뉴 버튼
         final TextView title = findViewById(R.id.title); // 제목
         final CalendarView calendarView = findViewById(R.id.calendarView); // 달력
 
@@ -49,76 +49,14 @@ public class Diary extends AppCompatActivity {
         btnDirDel= findViewById(R.id.btnDirDel); // 일기 삭제 버튼
         diaryTextView = findViewById(R.id.diaryTextView); // 일기 작성 여부 표기
 
-        title.setText(header[3]);
-        btnHome.setText(menu[0]);
-        btnPlant.setText(menu[1]);
-        btnLight.setText(menu[2]);
-        btnDiary.setText(menu[3]);
 
-        // 초기 상태 설정: btnMenu를 제외한 모든 버튼 숨기기
-        btnHome.setVisibility(View.GONE);
-        btnPlant.setVisibility(View.GONE);
-        btnLight.setVisibility(View.GONE);
-        btnDiary.setVisibility(View.GONE);
 
-        // btnMenu 클릭 이벤트
-        btnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnMenu.setVisibility(View.GONE); // btnMenu 숨기기
-                fadeInAnimation(btnHome);
-                fadeInAnimation(btnPlant);
-                fadeInAnimation(btnLight);
-                fadeInAnimation(btnDiary);
-            }
-        });
-
-        // btnHome 클릭 이벤트
-        btnHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Diary.this, home.class);
-                startActivity(intent);
-                finish();
-                // 다른 버튼들 숨기기
-                fadeOutAnimation(btnHome);
-                fadeOutAnimation(btnPlant);
-                fadeOutAnimation(btnLight);
-                fadeOutAnimation(btnDiary);
-                btnMenu.setVisibility(View.VISIBLE); // btnMenu 보이기
-            }
-        });
-
-        // btnPlant 클릭 이벤트
-        btnPlant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Diary.this, Plant.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        // btnLight 클릭 이벤트
-        btnLight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Diary.this, Light.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        // btnDiary 클릭 이벤트
-        btnDiary.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Diary.this, Diary.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
+        //뷰 초기화 및 기타 코드
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.btnFragment, new ButtonFragment()) // Use fragment_container instead of main
+                    .commit();
+        }
 
 
         // 캘린더 날짜 선택 리스너 설정
@@ -182,6 +120,36 @@ public class Diary extends AppCompatActivity {
         readDay = String.format("%d-%02d-%02d.txt", year, month + 1, dayOfMonth); // 파일 이름 설정
 
         checkDay(year, month, dayOfMonth); // 현재 날짜의 일기를 체크
+
+        //뷰 초기화 및 기타 코드
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.btnFragment, new ButtonFragment()) // Use fragment_container instead of main
+                    .commit();
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.diary), (view, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
+    }
+
+    @Override
+    public void onButtonClicked(int buttonId) { // 인터페이스 메소드 구현
+        if (buttonId == R.id.btnHome) {
+            Intent intent = new Intent(Diary.this, home.class);
+            startActivity(intent);
+            finish();
+        } else if (buttonId == R.id.btnPlant) {
+            Intent intent = new Intent(Diary.this, Plant.class);
+            startActivity(intent);
+            finish();
+        } else if (buttonId == R.id.btnGame) {
+            Intent intent = new Intent(Diary.this, Game.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     public void checkDay(int cYear, int cMonth, int cDay) {
@@ -214,17 +182,7 @@ public class Diary extends AppCompatActivity {
         }
     }
 
-    private void fadeInAnimation(View view) {
-        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        view.setVisibility(View.VISIBLE);
-        view.startAnimation(fadeIn);
-    }
 
-    private void fadeOutAnimation(View view) {
-        Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-        view.startAnimation(fadeOut);
-        view.setVisibility(View.GONE);
-    }
 
     public void removeDiary(String readDay) {
         try {

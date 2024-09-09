@@ -4,7 +4,36 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50ecb4e-a1c9-4a8d-ba0e-ac712d84b3f6" name="Changes" comment="" />
+    <list default="true" id="c50ecb4e-a1c9-4a8d-ba0e-ac712d84b3f6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/ButtonFragment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/EasyDifficulty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/Game.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/HardDifficulty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/NormalDifficulty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/SelectDifficulty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/SudokuSolver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_game.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/button_fragment.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/easy_difficulty.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/hard_difficulty.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/normal_difficulty.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/select_difficulty.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/ConnectedThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/ConnectedThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/Diary.java" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/Diary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/Light.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/Plant.java" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/Plant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/home.java" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/java/kr/ac/uc/home/home.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_diary.xml" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_diary.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_home.xml" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_home.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_light.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_plant.xml" beforeDir="false" afterPath="$PROJECT_DIR$/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout/activity_plant.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,9 +48,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2hBXm6CUTqxdVbqow3MrTqLcCDJ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -34,13 +63,20 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/0530ad/2024 Capstone/Easy_Plant(Dev)/SW"
+    "last_opened_file_path": "C:/Users/com/git/Capstone/2024 Capstone/Easy_Plant(Dev)/SW/app/src/main/res/layout"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\com\git\Capstone\2024 Capstone\Easy_Plant(Dev)\SW\app\src\main\res\layout" />
+      <recent name="C:\Users\com\git\Capstone\2024 Capstone\Easy_Plant(Dev)\SW\app\src\main\java\kr\ac\uc\home" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
