@@ -7,18 +7,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.lights.Light;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.view.Menu;//---------------------------
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +28,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,16 +41,20 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
     Date date = new Date(readDay);// 현재시간 data지정
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");// 날짜 포맷 지정
     String getTime = sdf.format(date);// 날짜 포맷 지정
+    int intdata =0; //식물 투명 설정 변수
 
     int waterLevel = 0; // 물수위 변수
 
     final int[] arrwaterlevel = {R.drawable.waterlvel1, R.drawable.waterlvel2, R.drawable.waterlvel3, R.drawable.waterlvel4}; // 수정 완료!
 
     ImageView ivPlant, ivwaterLevel;
-    TextView tvPlantedPlantName, tvPlantedDay, tvgrowDay, tvCondition, tvwaterLevelLabel, tvdiary;
+    TextView tvPlantedPlantName, tvPlantedDay, tvgrowDay, tvCondition, tvwaterLevelLabel, tvdiary ,tvplantmessage;
     EditText etWaterLevelInput;
 
-    Button btnWaterLeveltest;
+
+
+
+
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -85,6 +87,7 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
         tvgrowDay = findViewById(R.id.tvgrowDay); // 키운 날짜
         tvCondition = findViewById(R.id.tvCondition); // 식물 상태
         tvdiary = findViewById(R.id.tvdiary); // 일기장 작성 여부
+        tvplantmessage  =findViewById(R.id.tvplantmessage);
 
         //뷰 초기화 및 기타 코드
         if (savedInstanceState == null) {
@@ -102,14 +105,16 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
 
 
-        checkTodayDiary();
-        //growDay(); // 그로우데이 수정해줘슈바앍데ㅑㅙ핟ㅈ
+
+        plantinvisible(); // 심은 식물 부분 투명화
         waterlevelChange(waterLevel);
         checkTodayDiary();// 오늘 일기 확인
         growName();// 심은 식물 이름
-        //growDay();// 키운 날짜
+        growDay();// 키운 날짜
         //condition();// 식물 상태
         plantImage();// 심은 식물 이미지
+
+
 
     }
 
@@ -179,51 +184,9 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
     }
 
-    private void updateUI(String data) {
-        // 데이터를 사용하여 UI 업데이트
-        // 예: TextView textView = findViewById(R.id.dataTextView);
-        //     textView.setText(data);
-
-    }
 
 
-//   public void growDay() {// 키운 날짜
-//
-//        Intent intent = getIntent();//인텐트 받아오기
-//
-//        String plantName = intent.getStringExtra("plantName");
-//
-//        tvPlantedPlantName.setText(plantName);//심은 식물 이름
-//
-//        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
-//        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
-//
-//
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
-//        //LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
-//
-//        LocalDate startDate = LocalDate.parse(dateData, formatter);
-//        LocalDate endDate = LocalDate.now();//현재 날짜
-//        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-//
-//        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);//날짜 차이 계산
-//
-//        tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
-//
-//        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-//
-//
-//
-//        // 식물 상태
-//        if (daysBetween > 10) {
-//            tvCondition.setText("수확 시기 입니다.");
-//        } else {
-//            tvCondition.setText("잘 자라고 있어요.");
-//        }
-//
-//
-//
-//    }
+
 
     public void growName(){
         Intent intent = getIntent();//인텐트 받아오기
@@ -234,27 +197,48 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
     }
 
-   /*public void growDay() {// 키운 날짜
+    public void growDay() { // 키운 날짜 계산 메서드
+        Intent intent = getIntent(); // 인텐트 받아오기
 
-        Intent intent = getIntent();//인텐트 받아오기
+        try {
+            // 심은 날짜 받아오기 (dateKey에 해당하는 인텐트 데이터가 없을 경우 null 반환)
+            String dateData = intent.getStringExtra("dateKey");
 
-        String dateData = intent.getStringExtra("dateKey");//심은 날짜 받아오기
-        //날짜 데이터는 YYYY-MM-dd 형식으로 받아옴
+            if (dateData == null || dateData.isEmpty()) {
+                // dateData가 null이거나 빈 문자열일 경우 예외를 던짐
+                throw new IllegalArgumentException("유효하지 않은 날짜 데이터입니다.");
+            }
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 날짜 포맷 지정
+            LocalDate startDate = LocalDate.parse(dateData, formatter); // 심은 날짜 파싱
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //날짜 포맷 지정
-        LocalDate startDate = LocalDate.parse(dateData, formatter);//심은 날짜
+            LocalDate endDate = LocalDate.now(); // 현재 날짜
+            tvPlantedDay.setText("심은 날짜 : " + startDate); // 심은 날짜 출력
 
-        LocalDate endDate = LocalDate.now();//현재 날짜
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
+            long daysBetween = ChronoUnit.DAYS.between(startDate, endDate); // 날짜 차이 계산
 
-        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);//날짜 차이 계산
+            tvgrowDay.setText("키운 날짜 : " + daysBetween + " day"); // 키운 날짜 출력
 
-        tvgrowDay.setText("키운 날짜 : "+daysBetween+" day");//키운 날짜
+        } catch (DateTimeParseException e) {
+            // 날짜 형식이 잘못된 경우 발생하는 예외 처리
+            tvPlantedDay.setText("잘못된 날짜 형식입니다."); // 에러 메시지 출력
+            tvgrowDay.setText("키운 날짜를 계산할 수 없습니다."); // 에러 메시지 출력
+            e.printStackTrace(); // 예외 스택 트레이스 출력 (디버깅용)
 
-        tvPlantedDay.setText("심은 날짜 : "+startDate);//심은 날짜
-       }*/
-/*
+        } catch (IllegalArgumentException e) {
+            // dateData가 null이거나 빈 문자열일 경우의 예외 처리
+            tvPlantedDay.setText("날짜 데이터가 유효하지 않습니다."); // 에러 메시지 출력
+            tvgrowDay.setText("키운 날짜를 계산할 수 없습니다."); // 에러 메시지 출력
+            e.printStackTrace(); // 예외 스택 트레이스 출력 (디버깅용)
+
+        } catch (Exception e) {
+            // 그 외의 모든 예외 처리
+            tvPlantedDay.setText("알 수 없는 오류가 발생했습니다."); // 에러 메시지 출력
+            tvgrowDay.setText("키운 날짜를 계산할 수 없습니다."); // 에러 메시지 출력
+            e.printStackTrace(); // 예외 스택 트레이스 출력 (디버깅용)
+        }
+    }
+
 public void condition() {// 식물 상태
 
     //키운 날짜 받아오기
@@ -263,11 +247,12 @@ public void condition() {// 식물 상태
     // 식물 상태
     if (growDay > 10) {
         tvCondition.setText("수확 시기 입니다.");
-    } else {
+    }
+    else {
         tvCondition.setText("잘 자라고 있어요.");
     }
 
-}*/
+}
 
     public void plantImage() {// 심은 식물 이미지
 
@@ -289,6 +274,42 @@ public void condition() {// 식물 상태
         if (str1.isEmpty()) {// 심은 식물이 없을 때
 
         }
+    }
+
+    public void plantinvisible() { //식물 부분 투명화
+        Intent intent = getIntent(); // 인텐트 받아오기
+        intdata = intent.getIntExtra("intdataKey", 0);
+
+
+        if(intdata == 0){
+            ivPlant.setVisibility(View.GONE);
+            tvPlantedPlantName.setVisibility(View.GONE);
+            tvPlantedDay.setVisibility(View.GONE);
+            tvgrowDay.setVisibility(View.GONE);
+            tvCondition.setVisibility(View.GONE);
+            tvplantmessage.setVisibility(View.VISIBLE);
+            tvplantmessage.setText("    씨앗 탭에서 식물을 선택해 주세요");
+
+            FrameLayout PlantNamelayout  =findViewById(R.id.PlantNamelayout);
+            PlantNamelayout.setVisibility(View.GONE);
+        }
+        if (intdata == 1){
+            ivPlant.setVisibility(View.VISIBLE);
+            tvPlantedPlantName.setVisibility(View.VISIBLE);
+            tvPlantedDay.setVisibility(View.VISIBLE);
+            tvgrowDay.setVisibility(View.VISIBLE);
+            tvCondition.setVisibility(View.VISIBLE);
+
+            tvplantmessage.setVisibility(View.GONE);
+
+            FrameLayout PlantNamelayout  =findViewById(R.id.PlantNamelayout);
+            PlantNamelayout.setVisibility(View.VISIBLE);
+        }
+
+
+
+
+
     }
 
 
