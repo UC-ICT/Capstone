@@ -49,10 +49,13 @@
         android:layout_weight="1"
         android:orientation="vertical">
         <LinearLayout
+            android:id="@+id/sangchu_Layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@drawable/rounded_border"
+            android:clickable="true"
+            android:focusable="true"
             android:padding="10sp"
             android:layout_marginTop="5sp"
             android:layout_marginBottom="8sp">
@@ -85,10 +88,13 @@
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/ggatnip_Layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@drawable/rounded_border"
+            android:clickable="true"
+            android:focusable="true"
             android:padding="10sp"
             android:layout_marginTop="5sp"
             android:layout_marginBottom="8sp">
@@ -121,10 +127,13 @@
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/sweet_basil_Layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@drawable/rounded_border"
+            android:clickable="true"
+            android:focusable="true"
             android:padding="10sp"
             android:layout_marginTop="5sp"
             android:layout_marginBottom="8sp">
@@ -157,10 +166,13 @@
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/apple_mint_Layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@drawable/rounded_border"
+            android:clickable="true"
+            android:focusable="true"
             android:padding="10sp"
             android:layout_marginTop="5sp"
             android:layout_marginBottom="8sp">

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/layout_style"
+    android:padding="20dp"
+    android:id="@+id/plantYesNo"
+    >
+
+    <TextView
+        android:id="@+id/tvPlantYesNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnYES"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="2"
+            android:textStyle="bold"
+            android:backgroundTint="@color/bluetooth_button"
+
+            android:text="예" />
+
+        <Button
+            android:id="@+id/btnNO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:backgroundTint="@color/bluetooth_button"
+
+            android:textStyle="bold"
+
+            android:text="아니요" />
+    </LinearLayout>
+</LinearLayout>
