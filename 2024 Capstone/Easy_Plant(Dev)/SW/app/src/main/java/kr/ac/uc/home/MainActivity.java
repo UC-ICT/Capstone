@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     private Button mDiscoverBtn; // 장치 검색 버튼  //______________________________________
 
     private ListView mDevicesListView; // 장치 리스트뷰
-    private CheckBox mLED1; // LED1 체크박스
 
     private BluetoothAdapter mBTAdapter; // 블루투스 어댑터
     private Set<BluetoothDevice> mPairedDevices; // 페어링된 장치 세트
@@ -121,14 +120,10 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
 
         mBluetoothStatus = (TextView)findViewById(R.id.bluetooth_status); // 블루투스 상태 텍스트뷰 초기화
-        tvWaterLevel = (TextView) findViewById(R.id.tvWaterLevel);  //______________________________________
-        tvTemp = (TextView) findViewById(R.id.tvTemp); //______________________________________
-        tvHumi = (TextView) findViewById(R.id.tvHumi); //______________________________________
         mScanBtn = (Button)findViewById(R.id.scan); // 스캔 버튼 초기화
         mOffBtn = (Button)findViewById(R.id.off); // 블루투스 끄기 버튼 초기화
         mDiscoverBtn = (Button)findViewById(R.id.discover); // 장치 검색 버튼 초기화 //______________________________________
         mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn); // 페어링된 장치 목록 버튼 초기화
-        mLED1 = (CheckBox)findViewById(R.id.checkbox_led_1); // LED1 체크박스 초기화 //______________________________________
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 블루투스 어레이 어댑터 초기화
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // 블루투스 어댑터 초기화
@@ -145,21 +140,7 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg){ // --데이터 송신--
-                if(msg.what == MESSAGE_READ){ // 메시지가 읽기 메시지일 경우
-                    byte[] readBuffer = (byte[]) msg.obj;
-                    String readMessage = new String(readBuffer, StandardCharsets.UTF_8);
-                    // 데이터를 구분하여 TextView에 표시
-                    String[] data = readMessage.split("\n");
-                    for (String datum : data) {
-                        if (datum.startsWith("WaterLevel:")) {
-                            tvWaterLevel.setText(datum.substring("WaterLevel:".length()).trim());
-                        } else if (datum.startsWith("Temperature:")) {
-                            tvTemp.setText(datum.substring("Temperature:".length()).trim());
-                        } else if (datum.startsWith("Humidity:")) {
-                            tvHumi.setText(datum.substring("Humidity:".length()).trim());
-                        }
-                    }
-                }else{
+                if(msg.what != MESSAGE_READ){ // 메시지가 읽기 메시지일 경우
                     Log.e(TAG, "수신된 메시지가 바이트 배열이 아닙니다.");
                 }
 
@@ -199,19 +180,6 @@ public class MainActivity extends AppCompatActivity {
             homeActivityLauncher.launch(intent);
             finish();
 
-            // LED1 체크박스 클릭 리스너 설정
-            mLED1.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
-                    if(mConnectedThread != null) { // 스레드가 생성된 경우
-                        if (mLED1.isChecked()){
-                            mConnectedThread.write("1"); // "1" 메시지 전송
-                        }else{
-                            mConnectedThread.write("0"); // "0" 메시지 전송
-                        }
-                    }
-                }
-            });
             //_______________________________________________________
 
             // 스캔 버튼 클릭 리스너 설정

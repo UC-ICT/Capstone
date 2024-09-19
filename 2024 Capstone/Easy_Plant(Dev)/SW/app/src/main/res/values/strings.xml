@@ -20,5 +20,6 @@
     <string name="DisStop">Discovery stopped</string>
     <string name="status">"Status: "</string>
     <string name="discover_new_devices">Discover new device</string>
+    <string name="correct_message">정답! 시간: %1$s</string>
 
 </resources>

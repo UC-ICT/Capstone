@@ -24,7 +24,7 @@
             android:layout_height="50dp"
             android:layout_marginEnd="15dp"
             android:contentDescription="LOGO"
-             />
+            />
 
         <TextView
             android:id="@+id/title"
