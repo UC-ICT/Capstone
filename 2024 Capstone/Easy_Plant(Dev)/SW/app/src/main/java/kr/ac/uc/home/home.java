@@ -43,12 +43,6 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
     private final String TAG = home.class.getSimpleName();
 
-
-
-    long readDay = System.currentTimeMillis();// 현재시간
-    Date date = new Date(readDay);// 현재시간 data지정
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");// 날짜 포맷 지정
-
     long daysBetween;// 키운 날짜
 
 
@@ -74,8 +68,6 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_SEND_DATA)) {
                 String receivedData = intent.getStringExtra(SENSOR_DATA);
-                Log.d(TAG, "리시브 데이터: " + receivedData);
-
                 waterLevel = Integer.parseInt(receivedData);
                 waterlevelChange(waterLevel);
             }
@@ -130,17 +122,11 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
 
         linearButton1.setOnClickListener(v -> {
-
-            Log.d("Plantalllayout", "Plantalllayout 버튼 클릭");
-
-
             boolean Plantalllayout_Clickable = Plantalllayout.isClickable();
             boolean Plantalllayout_Focusable = Plantalllayout.isFocusable();
             if( Plantalllayout_Clickable && Plantalllayout_Focusable ){
                 dialogYesNo();
             }
-
-
         });
 
 
@@ -321,12 +307,6 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
             Plantalllayout.setClickable(false);
             Plantalllayout.setFocusable(false);
-
-            boolean Plantalllayout_Clickable = Plantalllayout.isClickable();
-            boolean Plantalllayout_Focusable = Plantalllayout.isFocusable();
-
-            Log.d("Plantalllayout intdata0", "Plantalllayout_Clickable: " + Plantalllayout_Clickable);
-            Log.d("Plantalllayout intdata0", "Plantalllayout_Focusable: " + Plantalllayout_Focusable);
         }
         if (intdata == 1){
             ivPlant.setVisibility(View.VISIBLE);
@@ -342,13 +322,6 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
             Plantalllayout.setClickable(true);
             Plantalllayout.setFocusable(true);
-
-            boolean Plantalllayout_Clickable = Plantalllayout.isClickable();
-            boolean Plantalllayout_Focusable = Plantalllayout.isFocusable();
-
-            Log.d("Plantalllayout intdata1", "Plantalllayout_Clickable: " + Plantalllayout_Clickable);
-            Log.d("Plantalllayout intdata1", "Plantalllayout_Focusable: " + Plantalllayout_Focusable);
-
         }
 
     }
@@ -359,9 +332,6 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
         plantName = sharedPreferences.getString("plantName", ""); // 심은 식물 이름 변수
         dateKey = sharedPreferences.getString("dateKey", ""); // 심은 날짜 변수
         intdata = sharedPreferences.getInt("intdata", 0); // 식물 투명 설정 변수
-        Log.d("SharedPreferences", "plantName: " + plantName);
-        Log.d("SharedPreferences", "dateKey: " + dateKey);
-        Log.d("SharedPreferences", "intdata: " + intdata);
     }
 
 
@@ -391,18 +361,8 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
         // YES 버튼 클릭 리스너 설정
         btnYES.setOnClickListener(view -> {
-            Log.d("home", "YES 버튼 클릭");
-
             Plantalllayout.setClickable(false);
             Plantalllayout.setFocusable(false);
-
-            boolean Plantalllayout_Clickable = Plantalllayout.isClickable();
-            boolean Plantalllayout_Focusable = Plantalllayout.isFocusable();
-
-
-            Log.d("Plantalllayout", "Plantalllayout_Clickable: " + Plantalllayout_Clickable);
-            Log.d("Plantalllayout", "Plantalllayout_Focusable: " + Plantalllayout_Focusable);
-
 
             editor.putInt("intdata", 0);
             editor.putInt("intdataKey", 0);
@@ -420,7 +380,6 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
         // NO 버튼 클릭 리스너 설정
         btnNO.setOnClickListener(view -> {
-            Log.d("plant", "NO 버튼 클릭");
             dialog.dismiss(); // 다이얼로그 닫기
         });
 

@@ -153,7 +153,6 @@ public class Plant extends AppCompatActivity implements ButtonFragment.OnButtonC
 
         // NO 버튼 클릭 리스너 설정
         btnNO.setOnClickListener(view -> {
-            Log.d("plant", "NO 버튼 클릭");
             dialog.dismiss(); // 다이얼로그 닫기
         });
 

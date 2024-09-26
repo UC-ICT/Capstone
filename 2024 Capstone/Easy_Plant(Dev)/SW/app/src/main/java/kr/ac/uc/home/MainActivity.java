@@ -67,10 +67,6 @@ public class MainActivity extends AppCompatActivity {
     // GUI 구성 요소
     private TextView mBluetoothStatus; // 블루투스 상태 텍스트뷰
 
-    private TextView tvWaterLevel; //______________________________________
-    private TextView tvTemp; //______________________________________
-    private TextView tvHumi; //______________________________________
-
     private Button mScanBtn; // 스캔 버튼
     private Button mOffBtn; // 블루투스 끄기 버튼
     private Button mListPairedDevicesBtn; // 페어링된 장치 목록 버튼
@@ -119,16 +115,16 @@ public class MainActivity extends AppCompatActivity {
 
         checkPermissions();
 
-        mBluetoothStatus = (TextView)findViewById(R.id.bluetooth_status); // 블루투스 상태 텍스트뷰 초기화
-        mScanBtn = (Button)findViewById(R.id.scan); // 스캔 버튼 초기화
-        mOffBtn = (Button)findViewById(R.id.off); // 블루투스 끄기 버튼 초기화
-        mDiscoverBtn = (Button)findViewById(R.id.discover); // 장치 검색 버튼 초기화 //______________________________________
-        mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn); // 페어링된 장치 목록 버튼 초기화
+        mBluetoothStatus = findViewById(R.id.bluetooth_status); // 블루투스 상태 텍스트뷰 초기화
+        mScanBtn = findViewById(R.id.scan); // 스캔 버튼 초기화
+        mOffBtn = findViewById(R.id.off); // 블루투스 끄기 버튼 초기화
+        mDiscoverBtn = findViewById(R.id.discover); // 장치 검색 버튼 초기화 //______________________________________
+        mListPairedDevicesBtn = findViewById(R.id.paired_btn); // 페어링된 장치 목록 버튼 초기화
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 블루투스 어레이 어댑터 초기화
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // 블루투스 어댑터 초기화
 
-        mDevicesListView = (ListView)findViewById(R.id.devices_list_view); // 장치 리스트뷰 초기화
+        mDevicesListView = findViewById(R.id.devices_list_view); // 장치 리스트뷰 초기화
         mDevicesListView.setAdapter(mBTArrayAdapter); // 어댑터를 리스트뷰에 설정
         mDevicesListView.setOnItemClickListener(mDeviceClickListener); // 리스트뷰 항목 클릭 리스너 설정
 
@@ -140,24 +136,13 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg){ // --데이터 송신--
-                if(msg.what != MESSAGE_READ){ // 메시지가 읽기 메시지일 경우
-                    Log.e(TAG, "수신된 메시지가 바이트 배열이 아닙니다.");
-                }
-
-                // ---------------------------------------
                 mConnectedThread.write("1");
-                // ---------------------------------------
-
 
                 if(msg.what == CONNECTING_STATUS) { // 메시지가 연결 상태일 경우
                     if (msg.arg1 == 1) { // 연결 성공 시
                         mBluetoothStatus.setText(getString(R.string.BTConnected) + msg.obj);
-                        //Intent intent = new Intent(MainActivity.this, home.class);
-                        //homeActivityLauncher.launch(intent);
-                        // ---------------------------------------
                         Intent homeIntent = new Intent(MainActivity.this, home.class);
                         homeActivityLauncher.launch(homeIntent);
-                        // ---------------------------------------
                         finish();
                     }
                     else // 연결 실패 시
@@ -221,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(ACTION_SEND_DATA);
         intent.putExtra(SENSOR_DATA, data);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        Log.d(TAG, "로컬매니저가 보내는 Extra값: " + intent);
     }
     // ---------------------------
 
