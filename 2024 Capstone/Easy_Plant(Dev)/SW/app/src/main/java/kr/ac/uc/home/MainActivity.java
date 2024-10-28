@@ -136,12 +136,14 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg){ // --데이터 송신--
-                mConnectedThread.write("1");
+
 
                 if(msg.what == CONNECTING_STATUS) { // 메시지가 연결 상태일 경우
                     if (msg.arg1 == 1) { // 연결 성공 시
                         mBluetoothStatus.setText(getString(R.string.BTConnected) + msg.obj);
+
                         Intent homeIntent = new Intent(MainActivity.this, home.class);
+
                         homeActivityLauncher.launch(homeIntent);
                         finish();
                     }
@@ -158,15 +160,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),getString(R.string.sBTdevNF),Toast.LENGTH_SHORT).show(); // 토스트 메시지 출력
         }
         else {
-            //_______________________________________________________
-            // 바로 homeActivity 로 이동
-            mBluetoothStatus.setText(getString(R.string.BTConnected) + "SMJ");
-            Intent intent = new Intent(MainActivity.this, home.class);
-            homeActivityLauncher.launch(intent);
-            finish();
-
-            //_______________________________________________________
-
             // 스캔 버튼 클릭 리스너 설정
             mScanBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -280,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothStatus.setText(getString(R.string.sBTdisabl)); // ___________________________________________
             Toast.makeText(getApplicationContext(), "Bluetooth turned Off", Toast.LENGTH_SHORT).show();
             // -----------------------------------
-            mConnectedThread.cancel();
+            //mConnectedThread.cancel();
             // -----------------------------------
         } else {
             checkPermissions(); // 필요한 권한 요청

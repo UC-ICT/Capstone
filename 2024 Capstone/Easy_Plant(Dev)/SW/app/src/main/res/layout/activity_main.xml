@@ -9,7 +9,6 @@
     android:paddingRight="16dp"
     android:paddingBottom="16dp"
     tools:context="kr.ac.uc.home.MainActivity"
-    android:background="@color/bluetooth_text"
     >
     <LinearLayout
         android:layout_width="match_parent"
