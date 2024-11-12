@@ -66,9 +66,6 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
     LinearLayout Plantalllayout;
 
-
-
-
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -81,6 +78,7 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
             }
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,15 +107,13 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
                     .commit();
         }
 
+
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-
-
-
 
         getplantdata();// 식물 DATA 받아오기
         plantinvisible(); // 심은 식물 부분 투명화
@@ -128,23 +124,15 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
         condition();// 식물 상태
         plantImage();// 심은 식물 이미지
 
-
         linearButton1.setOnClickListener(v -> {
-
             Log.d("Plantalllayout", "Plantalllayout 버튼 클릭");
-
 
             boolean Plantalllayout_Clickable = Plantalllayout.isClickable();
             boolean Plantalllayout_Focusable = Plantalllayout.isFocusable();
             if( Plantalllayout_Clickable && Plantalllayout_Focusable ){
                 dialogYesNo();
             }
-
-
         });
-
-
-
     }
 
     @Override
@@ -168,6 +156,7 @@ public class home extends AppCompatActivity implements ButtonFragment.OnButtonCl
 
     private void waterlevelChange(int waterLevel) {// 물수위 센서변화
         this.waterLevel = waterLevel;
+        Log.d(TAG, "waterlevelChange: " + waterLevel);
 
         if (waterLevel == 0) {
             tvwaterLevelLabel.setText("물을 채워주세요");

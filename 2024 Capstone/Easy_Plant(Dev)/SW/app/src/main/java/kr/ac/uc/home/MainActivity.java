@@ -9,6 +9,7 @@ import android.content.Context; // 안드로이드 컨텍스트 클래스 임포
 import android.content.Intent; // 인텐트 클래스 임포트
 import android.content.IntentFilter; // 인텐트 필터 클래스 임포트
 import android.content.pm.PackageManager; // 패키지 매니저 클래스 임포트
+import android.os.Build;
 import android.os.Bundle; // 번들 클래스 임포트
 import android.os.Handler; // 핸들러 클래스 임포트
 import android.os.Looper; // 루퍼 클래스 임포트
@@ -43,6 +44,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.io.IOException; // IO 예외 클래스 임포트
 import java.lang.reflect.Method; // 리플렉션 메소드 클래스 임포트
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Set; // 세트 클래스 임포트
 import java.util.UUID; // UUID 클래스 임포트
 
@@ -60,16 +62,12 @@ public class MainActivity extends AppCompatActivity {
     // 호출 함수 간에 공유되는 유형 식별을 위한 #defines
     private final static int REQUEST_ENABLE_BT = 1; // 블루투스 이름 추가를 식별하는 데 사용
     public final static int MESSAGE_READ = 2; // 블루투스 핸들러에서 메시지 업데이트 식별에 사용
-    private final static int CONNECTING_STATUS = 3; // 블루투스 핸들러에서 메시지 상태 식별에 사용
+    public final static int CONNECTING_STATUS = 3; // 블루투스 핸들러에서 메시지 상태 식별에 사용
     private static final int REQUEST_BLUETOOTH_CONNECT = 2;
     private static final int REQUEST_FINE_LOCATION = 3;
 
     // GUI 구성 요소
     private TextView mBluetoothStatus; // 블루투스 상태 텍스트뷰
-
-    private TextView tvWaterLevel; //______________________________________
-    private TextView tvTemp; //______________________________________
-    private TextView tvHumi; //______________________________________
 
     private Button mScanBtn; // 스캔 버튼
     private Button mOffBtn; // 블루투스 끄기 버튼
@@ -137,35 +135,40 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
         // 핸들러 초기화
-        mHandler = new Handler(Looper.getMainLooper()){
+        mHandler = new Handler(Looper.getMainLooper()) {
             @Override
-            public void handleMessage(Message msg){ // --데이터 송신--
-                if(msg.what != MESSAGE_READ){ // 메시지가 읽기 메시지일 경우
-                    Log.e(TAG, "수신된 메시지가 바이트 배열이 아닙니다.");
-                }
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MESSAGE_READ:
+                        // 데이터 수신 처리
+                        String readMessage = (String) msg.obj;
+                        Log.d(TAG, "Received Data: " + readMessage);
 
-                // ---------------------------------------
-                mConnectedThread.write("1");
-                // ---------------------------------------
+                        if (readMessage != null && !readMessage.equals("SMJ")) {  // 블루투스 모듈 이름 필터링
+                            // home으로 데이터 전송
+                            processReceivedData(readMessage);
+                        }
+                        break;
 
-
-                if(msg.what == CONNECTING_STATUS) { // 메시지가 연결 상태일 경우
-                    if (msg.arg1 == 1) { // 연결 성공 시
-                        mBluetoothStatus.setText(getString(R.string.BTConnected) + msg.obj);
-                        //Intent intent = new Intent(MainActivity.this, home.class);
-                        //homeActivityLauncher.launch(intent);
-                        // ---------------------------------------
-                        Intent homeIntent = new Intent(MainActivity.this, home.class);
-                        homeActivityLauncher.launch(homeIntent);
-                        // ---------------------------------------
-                        finish();
-                    }
-                    else // 연결 실패 시
-                        mBluetoothStatus.setText(getString(R.string.BTconnFail));
+                    case CONNECTING_STATUS:
+                        // 연결 상태 처리
+                        if (msg.arg1 == 1) {
+                            Log.d(TAG, "연결 성공!");
+                            mBluetoothStatus.setText("연결됨");
+                            // 연결 성공 시 home 액티비티로 한 번만 전환
+                            Intent homeIntent = new Intent(MainActivity.this, home.class);
+                            homeActivityLauncher.launch(homeIntent);
+                            finish();
+                            if (mConnectedThread != null) {
+                                mConnectedThread.write("1");
+                            }
+                        } else {
+                            mBluetoothStatus.setText(getString(R.string.BTconnFail));
+                        }
+                        break;
                 }
             }
         };
-
 
         // 블루투스 어댑터가 없으면 블루투스를 지원하지 않는 장치
         if (mBTArrayAdapter == null) {
@@ -173,15 +176,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),getString(R.string.sBTdevNF),Toast.LENGTH_SHORT).show(); // 토스트 메시지 출력
         }
         else {
-            //_______________________________________________________
-            // 바로 homeActivity 로 이동
-            mBluetoothStatus.setText(getString(R.string.BTConnected) + "SMJ");
-            Intent intent = new Intent(MainActivity.this, home.class);
-            homeActivityLauncher.launch(intent);
-            finish();
-
-            //_______________________________________________________
-
             // 스캔 버튼 클릭 리스너 설정
             mScanBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -216,14 +210,13 @@ public class MainActivity extends AppCompatActivity {
             //_______________________________________________________
         }
     }
-    // ---------------------------
-    private void sendDataToActivity(String data) {
+    // Arduino에서 수신한 데이터 처리 및 전송
+    private void processReceivedData(String data) {
+        // 브로드캐스트 전송
         Intent intent = new Intent(ACTION_SEND_DATA);
         intent.putExtra(SENSOR_DATA, data);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        Log.d(TAG, "로컬매니저가 보내는 Extra값: " + intent);
     }
-    // ---------------------------
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -245,17 +238,35 @@ public class MainActivity extends AppCompatActivity {
 
     // 권한 확인 및 요청 메서드 추가
     private void checkPermissions() {
-        // Check for Bluetooth permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // Android 12(API 31) 이상인지 확인
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12 이상에서는 추가적인 Bluetooth 권한이 필요함
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
 
-            // Request missing permissions
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-            }, REQUEST_FINE_LOCATION);
+                // 누락된 권한 요청
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.BLUETOOTH_ADMIN
+                }, REQUEST_FINE_LOCATION);
+            }
+        } else {
+            // Android 12 미만의 경우 기존 권한 요청
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                // 누락된 권한 요청
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_ADMIN,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                }, REQUEST_FINE_LOCATION);
+            }
         }
     }
 
@@ -293,11 +304,13 @@ public class MainActivity extends AppCompatActivity {
     private void bluetoothOff() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED) {
             mBTAdapter.disable();
-            mBluetoothStatus.setText(getString(R.string.sBTdisabl)); // ___________________________________________
+            mBluetoothStatus.setText(getString(R.string.sBTdisabl));
             Toast.makeText(getApplicationContext(), "Bluetooth turned Off", Toast.LENGTH_SHORT).show();
-            // -----------------------------------
-            mConnectedThread.cancel();
-            // -----------------------------------
+
+            // mConnectedThread가 null이 아닐 때만 cancel() 호출
+            if (mConnectedThread != null) {
+                mConnectedThread.cancel();
+            }
         } else {
             checkPermissions(); // 필요한 권한 요청
         }

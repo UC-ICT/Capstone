@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -51,12 +52,17 @@ public class ConnectedThread extends Thread{
                     buffer = new byte[1024]; // 버퍼 초기화
                     SystemClock.sleep(100); // 나머지 데이터를 기다리기 위해 잠시 대기
                     bytes = mmInStream.available(); // 다시 읽을 수 있는 바이트 수 확인
+                    Log.d(TAG, "bytes1: " + bytes);
                     bytes = mmInStream.read(buffer, 0, bytes); // 실제로 읽은 바이트 수를 버퍼에 저장
+                    Log.d(TAG, "bytes2: " + bytes);
 
-                    String readMessage = new String(buffer, 0, bytes, StandardCharsets.UTF_8); // 아두이노에서 보낸 데이터 읽기
+                    String readMessage = new String(buffer, 0, bytes).trim(); // 아두이노에서 보낸 데이터 읽기
+                    Log.d(TAG, "readMessage: " + readMessage);
 
-                    mHandler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget(); // 읽은 바이트를 핸들러에 메시지로 보내서 UI 업데이트
+                    Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_READ);
+                    msg.arg1 = bytes;
+                    msg.obj = readMessage;
+                    mHandler.sendMessage(msg);
                 }
             } catch (IOException e) { // 예외 발생 시
                 e.printStackTrace(); // 예외 스택 트레이스를 출력
@@ -67,7 +73,9 @@ public class ConnectedThread extends Thread{
 
     /* 원격 장치로 데이터를 보내기 위해 메인 액티비티에서 호출 */
     public void write(String input) {
-        byte[] bytes = input.getBytes(); // 입력된 문자열을 바이트 배열로 변환
+        Log.d(TAG, "input:  " + input);
+        byte[] bytes = input.getBytes(StandardCharsets.UTF_8); // 입력된 문자열을 바이트 배열로 변환
+        Log.d(TAG, "bytest: " + bytes);
         try {
             mmOutStream.write(bytes); // 출력 스트림에 바이트 배열을 씀
             Log.d(TAG, "Message Sent: " + input);
